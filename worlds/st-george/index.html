@@ -8,191 +8,101 @@
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#170d09;color:#fff;font-family:Inter,system-ui,sans-serif}
 *{box-sizing:border-box}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.caption{position:fixed;z-index:4;left:16px;right:16px;bottom:max(18px,env(safe-area-inset-bottom));max-width:560px;pointer-events:none;text-shadow:0 2px 20px #000}
-.caption h1{font-size:clamp(28px,7vw,52px);margin:0 0 5px;line-height:.95}.caption p{margin:0;color:#ead0bc;font-size:12px;line-height:1.4}.hint{margin-top:7px;font-size:10px;color:#c99a78}
+.caption{position:fixed;z-index:4;left:16px;right:16px;bottom:max(18px,env(safe-area-inset-bottom));max-width:620px;pointer-events:none;text-shadow:0 2px 18px #000}
+.caption h1{font-size:clamp(28px,7vw,52px);margin:0 0 5px;line-height:.95}.caption p{margin:0;color:#ead0bc;font-size:12px;line-height:1.42}.hint{margin-top:7px;font-size:10px;color:#d7a780}.attr{margin-top:5px;font-size:9px;color:#c49b82}
 </style>
 </head>
 <body>
-<canvas id="c" aria-label="Interactive St. George Utah 3D world"></canvas>
-<div class="caption"><h1 id="placeTitle">St. George</h1><p id="placeText">IRONMAN 70.3 World Championship race world · October 28–29, 2022.</p><div class="hint">Drag to orbit · pinch / wheel to zoom · Places to travel</div></div>
+<canvas id="c" aria-label="Interactive St. George 2022 World Championship 3D world"></canvas>
+<div class="caption"><h1 id="placeTitle">St. George · 2022</h1><p id="placeText">IRONMAN 70.3 World Championship · October 28–29, 2022.</p><div class="hint">Drag to orbit · pinch / wheel to zoom · Places to travel</div><div class="attr">Imagery: Esri World Imagery · Elevation: AWS Terrarium</div></div>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.160.0","three/":"https://esm.sh/three@0.160.0/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { detectDevice, installWorldNav, installResize, createFrameLoop, markWorldReady } from '../../world-runtime/core.js';
 import { installPlacesPanel, flyCamera } from '../../world-runtime/places.js';
+import { loadGeoTerrain, localMeters } from '../../world-runtime/geo-terrain.js';
 
-const { coarse, reducedMotion }=detectDevice();
-const canvas=document.querySelector('#c');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:!coarse,powerPreference:'high-performance'});
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.08;
+const {coarse}=detectDevice();
+const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#c'),antialias:!coarse,powerPreference:'high-performance'});
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xb98361);scene.fog=new THREE.FogExp2(0xc08f70,.00004);
+const camera=new THREE.PerspectiveCamera(48,1,2,120000);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.06;controls.minDistance=25;controls.maxDistance=65000;controls.maxPolarAngle=Math.PI*.495;controls.screenSpacePanning=true;controls.zoomSpeed=.9;controls.panSpeed=.7;
+controls.touches.ONE=THREE.TOUCH.ROTATE;controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
+scene.add(new THREE.HemisphereLight(0xffdfc2,0x4a2015,1.7));
+const sun=new THREE.DirectionalLight(0xffc487,4.0);sun.position.set(-22000,38000,17000);scene.add(sun);
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x1c0e09);
-scene.fog=new THREE.FogExp2(0x6c3b28,.004);
-
-const camera=new THREE.PerspectiveCamera(48,1,.1,900);
-camera.position.set(85,72,95);
-const controls=new OrbitControls(camera,canvas);
-controls.enableDamping=true; controls.dampingFactor=.065;
-controls.target.set(0,4,0);
-controls.minDistance=2; controls.maxDistance=230;
-controls.maxPolarAngle=Math.PI*.495;
-controls.screenSpacePanning=true;
-controls.zoomSpeed=1.0; controls.panSpeed=.8; controls.rotateSpeed=.55;
-controls.touches.ONE=THREE.TOUCH.ROTATE; controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
-
-scene.add(new THREE.HemisphereLight(0xffd6b0,0x32140d,1.65));
-const sun=new THREE.DirectionalLight(0xffb66f,4.4); sun.position.set(-45,95,55); scene.add(sun);
-
-const MAT={
- desert:new THREE.MeshStandardMaterial({color:0x6f2a1c,roughness:.98}),
- mesa:new THREE.MeshStandardMaterial({color:0x923b24,roughness:.94}),
- dark:new THREE.MeshStandardMaterial({color:0x401710,roughness:.98}),
- road:new THREE.MeshStandardMaterial({color:0x2e2b29,roughness:.98}),
- city:new THREE.MeshStandardMaterial({color:0xcab8a3,roughness:.86}),
- roof:new THREE.MeshStandardMaterial({color:0x765443,roughness:.9}),
- water:new THREE.MeshPhysicalMaterial({color:0x176f86,roughness:.18,metalness:.02,transparent:true,opacity:.88}),
- green:new THREE.MeshStandardMaterial({color:0x536c39,roughness:.95}),
- glow:new THREE.MeshBasicMaterial({color:0xff7d32,toneMapped:false}),
- white:new THREE.MeshStandardMaterial({color:0xf2eee8,roughness:.72}),
- black:new THREE.MeshStandardMaterial({color:0x171717,roughness:.8})
+const P={
+ sand_hollow:{label:'Sand Hollow / T1',description:'Swim start and Transition 1',lat:37.12056,lon:-113.38528},
+ snow_canyon:{label:'Snow Canyon',description:'Signature red-rock bike corridor',lat:37.20306,lon:-113.64},
+ red_hills:{label:'Red Hills',description:'Red Hills Parkway / run terrain',lat:37.11406,lon:-113.57471},
+ town_square:{label:'Town Square Park / finish',description:'IRONMAN Village and finish',lat:37.1074,lon:-113.58492},
+ t2:{label:'Tabernacle St / 100W · T2',description:'2022 Transition 2',lat:37.1078,lon:-113.5837},
+ convention:{label:'Dixie Convention Center',description:'Race-week ceremonies',lat:37.07712,lon:-113.5824}
 };
+let geo=null,cancelFlight=null;
 
-function box(x,y,z,w,h,d,mat,name=''){
- const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y+h/2,z); m.name=name; scene.add(m); return m;
+function marker(pos,color=0xff6a2a,height=110){
+ const g=new THREE.Group();g.position.copy(pos);
+ const beam=new THREE.Mesh(new THREE.CylinderGeometry(7,7,height,10),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.45,depthWrite:false}));
+ beam.position.y=height/2;g.add(beam);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(40,5,8,28),new THREE.MeshBasicMaterial({color,toneMapped:false}));
+ ring.rotation.x=Math.PI/2;ring.position.y=4;g.add(ring);scene.add(g);return g;
 }
-function cyl(x,y,z,r,h,mat,seg=12){
- const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),mat); m.position.set(x,y+h/2,z); scene.add(m); return m;
+function boxAt(lat,lon,w,h,d,mat,y=0){
+ const p=geo.toWorld(lat,lon,y),m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.copy(p);m.position.y+=h/2;scene.add(m);return m;
 }
-function mesa(x,z,r=12,h=10,mat=MAT.mesa){
- const m=new THREE.Mesh(new THREE.CylinderGeometry(r*.72,r,h,coarse?10:18,4),mat);
- m.position.set(x,h/2,z); m.rotation.y=(x+z)*.03; scene.add(m); return m;
+function archAt(lat,lon){
+ const mat=new THREE.MeshStandardMaterial({color:0x111111,roughness:.8}),white=new THREE.MeshStandardMaterial({color:0xf2eee8,roughness:.7});
+ const p=geo.toWorld(lat,lon,3);
+ for(const dx of [-18,18]){const m=new THREE.Mesh(new THREE.BoxGeometry(3,32,3),mat);m.position.copy(p).add(new THREE.Vector3(dx,16,0));scene.add(m)}
+ const top=new THREE.Mesh(new THREE.BoxGeometry(39,4,4),white);top.position.copy(p).add(new THREE.Vector3(0,31,0));scene.add(top);
 }
-function road(points,width=2.2){
- const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],.16,p[1])));
- const geo=new THREE.TubeGeometry(curve,Math.max(20,points.length*12),width,6,false);
- const m=new THREE.Mesh(geo,MAT.road); m.scale.y=.05; scene.add(m); return m;
+function routeLine(keys,color=0xff532c){
+ const pts=keys.map(k=>geo.toWorld(P[k].lat,P[k].lon,16));
+ const curve=new THREE.CatmullRomCurve3(pts);
+ const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,80,7,6,false),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.72,toneMapped:false}));
+ scene.add(tube);
 }
-function finishArch(x,z){
- box(x-2.6,.1,z,.28,3.8,.28,MAT.black); box(x+2.6,.1,z,.28,3.8,.28,MAT.black); box(x,3.55,z,5.5,.35,.3,MAT.white);
- for(let i=-2;i<=2;i++) box(x+i*.95,3.6,z-.17,.45,.25,.06,i%2?MAT.black:MAT.white);
+function destinationView(id){
+ if(id==='overview') return {pos:new THREE.Vector3(0,26000,26000),target:new THREE.Vector3(0,500,0),title:'St. George · Oct 28–29, 2022',text:'Real satellite terrain covering Sand Hollow, downtown St. George, Red Hills and Snow Canyon.'};
+ const p=P[id],t=geo.toWorld(p.lat,p.lon,20);
+ const close=['town_square','t2','convention'].includes(id);
+ const offset=close?new THREE.Vector3(500,360,500):new THREE.Vector3(1700,1100,1700);
+ return {pos:t.clone().add(offset),target:t,title:p.label,text:p.description};
 }
-
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(360,360,40,40),MAT.desert);
-ground.rotation.x=-Math.PI/2;
-const gp=ground.geometry.attributes.position;
-for(let i=0;i<gp.count;i++){
- const x=gp.getX(i),y=gp.getY(i);
- const h=(Math.sin(x*.075)+Math.cos(y*.06)+Math.sin((x+y)*.035))*1.1;
- gp.setZ(i,h);
-}
-ground.geometry.computeVertexNormals(); scene.add(ground);
-
-// Regional red-rock skyline
-[
- [-95,70,25,28],[-76,88,18,36],[-58,82,15,30],[-42,92,14,24],
- [82,-78,20,18],[100,-64,14,24],[112,-42,18,30],
- [-105,-25,15,20],[96,68,20,24]
-].forEach(([x,z,r,h])=>mesa(x,z,r,h));
-
-// Downtown 2022 championship venue: Town Square Park / finish / T2 / Tabernacle
-for(let ix=-18;ix<=18;ix+=6) for(let iz=-14;iz<=14;iz+=7){
- const h=2.8+((Math.abs(ix*17+iz*11)%7));
- box(ix,h*.02,iz,4.4,h,4.8,MAT.city,'downtown_building');
- box(ix,h+.04,iz,4.6,.5,5,MAT.roof);
-}
-road([[-42,5],[-22,4],[0,3],[28,2],[45,0]],2.6);
-road([[0,-42],[0,-20],[0,5],[0,28]],2.4);
-finishArch(0,-4);
-box(-7,.1,-4,5,.18,2,MAT.glow,'transition_t2');
-// Town Square Park
-const townPark=new THREE.Mesh(new THREE.PlaneGeometry(18,14),MAT.green);townPark.rotation.x=-Math.PI/2;townPark.position.set(8,.21,8);scene.add(townPark);
-for(let i=0;i<8;i++){const a=i/8*Math.PI*2;cyl(8+Math.cos(a)*6,.2,8+Math.sin(a)*4,.22,3.6,MAT.dark,8);}
-// Tabernacle / T2 marker
-box(-11,.1,2,8,5.8,6,MAT.white,'tabernacle');
-box(-11,5.9,2,8.6,.65,6.6,MAT.roof);
-cyl(-11,6.5,2,1.0,3.2,MAT.white,12);
-// race expo / finish structures
-for(let i=0;i<6;i++) box(3+i*2.1,.1,-8,1.6,2.2,1.8,i%2?MAT.white:MAT.glow,'race_village_tent');
-// Dixie Convention Center
-box(34,.1,-29,22,7.5,15,MAT.city,'dixie_convention_center');
-box(34,7.7,-29,22.5,.7,15.5,MAT.roof);
-
-// Red Hills area
-for(let i=0;i<12;i++){
- const a=i/12*Math.PI*2, r=10+(i%3)*4;
- mesa(-31+Math.cos(a)*r,30+Math.sin(a)*r,2.2+(i%4)*.8,3.8+(i%5)*1.2,i%2?MAT.dark:MAT.mesa);
-}
-const golf=new THREE.Mesh(new THREE.CircleGeometry(15,30),MAT.green); golf.rotation.x=-Math.PI/2; golf.position.set(-22,.22,21); scene.add(golf);
-road([[-2,17],[-12,19],[-23,24],[-38,31],[-49,39]],2.2);
-
-// Snow Canyon corridor
-for(let i=0;i<18;i++){
- const z=50+i*3.4;
- mesa(-62-(i%3)*6,z,5+(i%4),8+(i%6)*2.2,i%2?MAT.mesa:MAT.dark);
- mesa(-32+(i%4)*4,z+1.5,4+(i%3),6+(i%5)*2,i%2?MAT.dark:MAT.mesa);
-}
-road([[-45,38],[-49,50],[-51,65],[-50,82],[-46,101]],2.4);
-
-// Sand Hollow / T1
-const reservoir=new THREE.Mesh(new THREE.CircleGeometry(27,48),MAT.water);
-reservoir.rotation.x=-Math.PI/2; reservoir.scale.set(1.5,.8,1); reservoir.position.set(74,.24,-64); scene.add(reservoir);
-for(let i=0;i<14;i++){const a=i/14*Math.PI*2;mesa(74+Math.cos(a)*34,-64+Math.sin(a)*26,3+(i%4),3+(i%5)*1.5);}
-box(53,.1,-48,10,.2,5,MAT.glow,'transition_t1');
-road([[54,-48],[40,-36],[30,-25],[21,-12],[12,-3]],2.3);
-
-// Course hint ribbon joining zones
-const routePts=[[55,-48],[38,-32],[22,-18],[8,-4],[-8,8],[-24,21],[-43,38],[-50,58],[-49,78],[-43,96]];
-const route=new THREE.Line(
- new THREE.BufferGeometry().setFromPoints(routePts.map(([x,z])=>new THREE.Vector3(x,.8,z))),
- new THREE.LineBasicMaterial({color:0xff6030})
-);
-scene.add(route);
-
-const views={
- overview:{pos:[88,78,100],target:[0,4,5],title:'St. George · Oct 28–29, 2022',text:'IRONMAN 70.3 World Championship race world from Sand Hollow through Snow Canyon and Red Hills into downtown.'},
- sand_hollow:{pos:[98,28,-94],target:[72,1,-62],title:'Sand Hollow / T1',text:'Reservoir swim and first transition zone.'},
- town_square:{pos:[27,16,28],target:[8,3,8],title:'Town Square Park / finish',text:'IRONMAN Village, finish line, post-race and shuttle hub in the 2022 championship venue.'},
- t2:{pos:[12,12,22],target:[-11,3,2],title:'Tabernacle St / 100W · T2',text:'Transition 2 and run-bag area for the 2022 championship.'},
- convention:{pos:[55,20,-5],target:[34,4,-29],title:'Dixie Convention Center',text:'Welcome banquet and World Championship celebration venue.'},
- red_hills:{pos:[-4,24,52],target:[-28,4,27],title:'Red Hills',text:'Run-course terrain and Red Hills Parkway corridor.'},
- snow_canyon:{pos:[-13,42,86],target:[-48,9,73],title:'Snow Canyon',text:'Signature red-rock bike corridor and climbing landscape.'}
-};
-const places=[
- {id:'overview',label:'Whole world',description:'St. George race geography'},
- {id:'sand_hollow',label:'Sand Hollow / T1',description:'Reservoir, swim and transition'},
- {id:'snow_canyon',label:'Snow Canyon',description:'Red-rock bike corridor'},
- {id:'red_hills',label:'Red Hills',description:'Parkway and run terrain'},
- {id:'town_square',label:'Town Square Park / finish',description:'IRONMAN Village + finish'},
- {id:'t2',label:'Tabernacle St / 100W · T2',description:'2022 Transition 2'},
- {id:'convention',label:'Dixie Convention Center',description:'Race-week ceremonies'}
-];
-
-let cancelFlight=null;
 function goto(id){
- const v=views[id]||views.overview;
- cancelFlight?.();
- cancelFlight=flyCamera({
-  camera,controls,
-  toPosition:new THREE.Vector3(...v.pos),
-  toTarget:new THREE.Vector3(...v.target),
-  duration:id==='overview'?1.4:1.15
- });
- document.querySelector('#placeTitle').textContent=v.title;
- document.querySelector('#placeText').textContent=v.text;
+ const v=destinationView(id);cancelFlight?.();cancelFlight=flyCamera({camera,controls,toPosition:v.pos,toTarget:v.target,duration:id==='overview'?1.5:1.25});
+ document.querySelector('#placeTitle').textContent=v.title;document.querySelector('#placeText').textContent=v.text;
 }
 
-installWorldNav({href:'../../'});
-installPlacesPanel({title:'St. George places',places,initial:'overview',onSelect:p=>goto(p.id)});
+async function init(){
+ installWorldNav({href:'../../'});
+ try{geo=await loadGeoTerrain(THREE,scene,{base:'./geo/',segments:coarse?96:128});}
+ catch(e){
+   console.error('Real terrain unavailable, using fallback',e);
+   const plane=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000,20,20),new THREE.MeshStandardMaterial({color:0x7b3321,roughness:1}));plane.rotation.x=-Math.PI/2;scene.add(plane);
+   const center={lat:37.13,lon:-113.53};
+   geo={toWorld:(lat,lon,y=0)=>{const [x,n]=localMeters(lat,lon,center);return new THREE.Vector3(x,y,-n)}};
+ }
+ const red=new THREE.MeshStandardMaterial({color:0xb04d31,roughness:.9}),sand=new THREE.MeshStandardMaterial({color:0xe2d4c3,roughness:.86}),dark=new THREE.MeshStandardMaterial({color:0x262321,roughness:.9}),green=new THREE.MeshStandardMaterial({color:0x637b43,roughness:.95});
+ for(const [id,p] of Object.entries(P)) marker(geo.toWorld(p.lat,p.lon,4),id==='snow_canyon'?0xff9a58:0xff5d2a,id==='snow_canyon'?160:100);
+ // 2022 venue detail
+ archAt(P.town_square.lat,P.town_square.lon);
+ boxAt(P.t2.lat,P.t2.lon,52,22,35,red,1);
+ boxAt(P.convention.lat,P.convention.lon,150,34,90,sand,1);
+ boxAt(P.town_square.lat+0.00018,P.town_square.lon+0.00018,95,1.5,72,green,1);
+ for(let i=0;i<16;i++) boxAt(P.sand_hollow.lat+(i%8)*0.000035,P.sand_hollow.lon+Math.floor(i/8)*0.00007,4,3,24,dark,2);
+ routeLine(['sand_hollow','town_square','red_hills','snow_canyon'],0xff4d21);
+ const places=[{id:'overview',label:'Whole 2022 world',description:'Championship geography'},...Object.entries(P).map(([id,p])=>({id,label:p.label,description:p.description}))];
+ installPlacesPanel({title:'St. George 2022 places',places,initial:'overview',onSelect:p=>goto(p.id)});
+ goto('overview');
+ markWorldReady({id:'st-george',detail:{kind:'geo-race-world',era:'2022-10-28/29',places:places.length}});
+}
 installResize({renderer,camera,quality:()=>coarse?'balanced':'high'});
-createFrameLoop((dt,t)=>{
- if(!reducedMotion) reservoir.material.opacity=.84+.04*Math.sin(t*.55);
- controls.update(); renderer.render(scene,camera);
-});
-markWorldReady({id:'st-george',detail:{kind:'multi-location-world',places:places.length,date:'2022-10-28/29'}});
+createFrameLoop(()=>{controls.update();renderer.render(scene,camera)});
+init();
 </script>
 </body>
 </html>

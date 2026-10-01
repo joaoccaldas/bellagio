@@ -69,7 +69,6 @@ body.walking #stick{display:block}
 </head>
 <body>
 <canvas id="c"></canvas>
-<a href="../../" aria-label="Back to world map" style="position:fixed;top:max(12px,env(safe-area-inset-top));right:14px;z-index:8;color:#f4eee3;text-decoration:none;background:rgba(14,12,10,.76);border:1px solid rgba(216,180,106,.28);border-radius:999px;padding:8px 12px;backdrop-filter:blur(10px)">World map</a>
 <div class="brand" id="dateline"><b>Las Vegas</b><span class="date">30/10/2022</span><span class="event">Vegas Golden Knights vs Winnipeg Jets at T-Mobile Arena, evening</span></div>
 <div id="caption"></div>
 <div id="lift"><span>PRIVATE LIFT</span><b>L</b><span>LEVEL</span></div>
@@ -85,6 +84,11 @@ body.walking #stick{display:block}
   <p><label>Exposure <input id="exposure" type="range" min=".4" max="2" step=".01"></label></p></div>
 <div class="panel" id="infoPanel"><button class="close">×</button><div id="infoBody"></div></div>
 <div id="loading"><div><h1>BELLAGIO</h1><div class="track"><div id="bar"></div></div><p>Loading the lake, the tower and the light</p></div></div>
+<script type="module">
+import { installWorldNav, markWorldReady } from '../../world-runtime/core.js';
+installWorldNav({ href: '../../' });
+window.addEventListener('load', () => markWorldReady({ id: 'vegas', detail: { kind: 'full-world' } }), { once: true });
+</script>
 <script>window.__BELLAGIO_ASSETS='assets/';</script>
 <script>__APP__</script>
 </body>

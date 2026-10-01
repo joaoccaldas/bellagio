@@ -1,0 +1,11 @@
+import { build } from 'esbuild';
+import fs from 'fs';
+import path from 'path';
+const here = path.dirname(new URL(import.meta.url).pathname);
+const res = await build({ entryPoints: [path.join(here, 'src/main.js')], bundle: true, format: 'iife', minify: true, write: false, target: 'es2020', legalComments: 'none' });
+const app = res.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
+const tpl = fs.readFileSync(path.join(here, 'index.template.html'), 'utf8');
+const out = process.env.OUT_DIR || path.join(here, 'dist');
+fs.mkdirSync(path.join(out, 'assets'), { recursive: true });
+fs.writeFileSync(path.join(out, 'index.html'), tpl.replace('__APP__', () => '/* Bellagio twin · Three.js r186 (MIT), three-mesh-bvh (MIT) */\n' + app));
+console.log('app', (app.length / 1e3).toFixed(0), 'kB');

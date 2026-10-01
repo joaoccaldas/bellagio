@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bellagio Digital Twin</title>
+<meta name="description" content="A walkable reconstruction of the Bellagio, Las Vegas: surveyed tower, lake and fountains, lobby, Fiori di Como, Conservatory, and an invented penthouse.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#f4eee3;--mute:#b9ad99;--gold:#d8b46a;--panel:rgba(14,12,10,.72);--line:rgba(216,180,106,.28);
+  --M:#6fc1a4;--P:#7fb0e8;--F:#e0c070;--I:#c9a0d8;--X:#ef8a6a}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#0b0a09;color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh;touch-action:none}
+.brand{position:fixed;top:14px;left:22px;right:22px;z-index:6;pointer-events:none}
+.brand b{display:block;font:500 26px/1 'Cormorant Garamond',serif;letter-spacing:.28em;color:var(--gold);text-transform:uppercase}
+.brand .date{display:block;margin-top:5px;font-size:14px;letter-spacing:.16em;color:#fff}
+.brand .event{display:block;margin-top:3px;max-width:680px;font-size:13px;letter-spacing:.01em;color:var(--mute)}
+.bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;
+  background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:999px;padding:8px 12px;max-width:calc(100vw - 32px)}
+button,select{font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+button:hover{border-color:var(--gold);color:#fff}
+input[type=range]{accent-color:var(--gold);width:180px}
+#todLabel{font-variant-numeric:tabular-nums;color:var(--gold);min-width:44px;text-align:center}
+.panel{position:fixed;top:70px;right:16px;width:min(380px,calc(100vw - 32px));max-height:calc(100vh - 150px);overflow:auto;background:var(--panel);
+  backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;padding:16px 18px;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.25s}
+.panel.on{opacity:1;transform:none;pointer-events:auto}
+.panel h3,.panel h4{font:600 17px 'Cormorant Garamond',serif;color:var(--gold);letter-spacing:.06em;margin:14px 0 6px}
+.panel h4{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-family:Inter}
+#places button,#shows button{display:block;width:100%;text-align:left;border-radius:8px;margin:4px 0;border-color:transparent;background:rgba(255,255,255,.03)}
+#places button:hover{border-color:var(--line)}
+.close{position:absolute;top:10px;right:10px;padding:2px 10px}
+.fine{color:var(--mute);font-size:12px}
+.ev{display:inline-block;font:500 10px Inter;letter-spacing:.08em;padding:2px 7px;border-radius:999px;border:1px solid currentColor;margin:0 2px;font-style:normal}
+.ev-M{color:var(--M)}.ev-P{color:var(--P)}.ev-F{color:var(--F)}.ev-I{color:var(--I)}.ev-X{color:var(--X)}
+#caption{position:fixed;left:22px;bottom:84px;max-width:min(520px,calc(100vw - 44px));opacity:0;transition:.6s;pointer-events:none}
+#caption.on{opacity:1}
+#caption b{display:block;font:500 30px/1.1 'Cormorant Garamond',serif;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.6)}
+#caption span{display:block;color:var(--ink);opacity:.85;margin:4px 0 6px;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+#lift{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:.4s;pointer-events:none;text-align:center}
+#lift.on{opacity:1}
+#lift b{display:block;font:500 64px/1 'Cormorant Garamond',serif;color:#ffcf7a;text-shadow:0 0 24px rgba(255,190,90,.7)}
+#lift span{letter-spacing:.4em;font-size:10px;color:var(--mute)}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:#0b0a09;transition:opacity .8s}
+#loading.done{opacity:0;pointer-events:none}
+#loading h1{font:500 42px 'Cormorant Garamond',serif;letter-spacing:.5em;color:var(--gold);margin:0 0 8px;text-align:center}
+#loading .track{width:240px;height:2px;background:rgba(255,255,255,.1);margin:18px auto 10px}#bar{height:100%;width:0;background:var(--gold);transition:width .3s}
+#loading p{color:var(--mute);text-align:center;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+#stick{position:fixed;left:26px;bottom:90px;width:110px;height:110px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.25);display:none;touch-action:none}
+body.walking #stick{display:block}
+@media (pointer:fine){body.walking #stick{display:none}}
+@media (max-width:640px){.brand b{font-size:20px}input[type=range]{width:120px}#caption b{font-size:22px}.bar{gap:6px;padding:6px 8px}button,select{padding:6px 10px}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="brand" id="dateline"><b>Las Vegas</b><span class="date">30/10/2022</span><span class="event">Vegas Golden Knights vs Winnipeg Jets at T-Mobile Arena, evening</span></div>
+<div id="caption"></div>
+<div id="lift"><span>PRIVATE LIFT</span><b>L</b><span>LEVEL</span></div>
+<div id="stick" aria-label="Move"></div>
+<div class="bar">
+  <button id="placesBtn">Places</button>
+  <button id="modeBtn">Walk</button>
+  <input id="tod" type="range" min="0" max="1" step=".001" aria-label="Time of day"><span id="todLabel">--:--</span>
+  <button id="infoBtn">Evidence</button>
+</div>
+<div class="panel" id="placesPanel"><button class="close">×</button><h3>Places</h3><div id="places"></div><h3>Fountain shows</h3><div id="shows"></div>
+  <h3>View</h3><p><label>Quality <select id="quality"><option value="balanced">Balanced</option><option value="high">High</option><option value="ultra">Ultra</option></select></label></p>
+  <p><label>Exposure <input id="exposure" type="range" min=".4" max="2" step=".01"></label></p></div>
+<div class="panel" id="infoPanel"><button class="close">×</button><div id="infoBody"></div></div>
+<div id="loading"><div><h1>BELLAGIO</h1><div class="track"><div id="bar"></div></div><p>Loading the lake, the tower and the light</p></div></div>
+<script>window.__BELLAGIO_ASSETS='assets/';</script>
+<script>__APP__</script>
+</body>
+</html>

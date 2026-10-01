@@ -1,0 +1,8 @@
+# Temporary bakes and test outputs
+renders/
+out/
+out_test/
+node_modules/
+.DS_Store
+*.pyc
+__pycache__/

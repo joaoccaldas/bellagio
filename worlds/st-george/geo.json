@@ -1,0 +1,17 @@
+{
+  "id": "st-george",
+  "center": {
+    "lat": 37.13,
+    "lon": -113.53
+  },
+  "bbox": {
+    "west": -113.72,
+    "south": 37,
+    "east": -113.32,
+    "north": 37.28
+  },
+  "zoom": 12,
+  "grid": 129,
+  "vertical_scale": 1,
+  "attribution": "Imagery: Esri World Imagery · Elevation: AWS Terrarium"
+}

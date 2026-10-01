@@ -1,0 +1,32 @@
+{
+  "schema": "caldas.world-registry/v1",
+  "worlds": [
+    {
+      "id": "vegas",
+      "name": "Las Vegas",
+      "lat": 36.1147,
+      "lon": -115.1728,
+      "kind": "full-world",
+      "route": "worlds/vegas/",
+      "source": "joaoccaldas/bellagio"
+    },
+    {
+      "id": "kona",
+      "name": "Kona",
+      "lat": 19.64,
+      "lon": -155.9969,
+      "kind": "full-island",
+      "route": "worlds/kona/",
+      "source": "joaoccaldas/studio-kona"
+    },
+    {
+      "id": "st-george",
+      "name": "St. George",
+      "lat": 37.0965,
+      "lon": -113.5684,
+      "kind": "scene",
+      "route": "worlds/st-george/",
+      "source": "joaoccaldas/canyonmuseum"
+    }
+  ]
+}

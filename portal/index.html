@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071014">
+<title>Caldas Worlds</title>
+<meta name="description" content="Explore live 3D worlds: Las Vegas, Kona and St. George.">
+<style>
+:root{--bg:#071014;--panel:rgba(13,25,29,.78);--line:rgba(255,255,255,.12);--text:#f5f7f4;--muted:#9fb0ad;--accent:#d8b46a;--ready:#77d3a8;--study:#e6b86b}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{margin:0;min-height:100dvh;background:radial-gradient(circle at 50% -10%,#163237 0,#071014 50%,#040809 100%)}
+a{color:inherit}
+.shell{width:min(1200px,100%);margin:auto;padding:max(22px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(34px,9vw,76px);line-height:.95;letter-spacing:-.04em;margin:10px 0 14px;max-width:900px}
+.lede{margin:0;color:var(--muted);font-size:clamp(15px,3.6vw,20px);max-width:720px;line-height:1.5}
+.map-wrap{position:relative;margin:26px 0 18px;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:linear-gradient(180deg,rgba(17,39,44,.85),rgba(7,16,20,.95));box-shadow:0 30px 90px rgba(0,0,0,.35)}
+.map-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 4px;gap:12px}.map-head strong{font-size:13px}.map-head span{font-size:12px;color:var(--muted)}
+.map{position:relative;aspect-ratio:1.7;min-height:310px;padding:12px}
+.map svg{display:block;width:100%;height:100%}
+.land{fill:#1d3538;stroke:#315154;stroke-width:.6}.grid{stroke:#244247;stroke-width:.35;opacity:.48}
+.pin{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(7,16,20,.72);backdrop-filter:blur(8px);text-decoration:none;z-index:3}
+.pin::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 8px rgba(216,180,106,.12),0 0 28px rgba(216,180,106,.55)}
+.pin::after{content:attr(data-label);position:absolute;left:50%;top:48px;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:650;padding:6px 9px;border-radius:999px;background:rgba(7,16,20,.86);border:1px solid var(--line)}
+.pin.vegas{left:18.0%;top:30%}.pin.kona{left:6.7%;top:39.1%}.pin.stg{left:18.5%;top:29.4%}
+.pin.stg{transform:translate(22px,24px)}
+.pin:hover,.pin:focus-visible{outline:none;border-color:var(--accent);scale:1.06}
+.worlds{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{display:flex;flex-direction:column;min-height:205px;padding:18px;border:1px solid var(--line);border-radius:22px;text-decoration:none;background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));transition:.2s transform,.2s border-color}
+.card:hover{transform:translateY(-2px);border-color:rgba(216,180,106,.45)}
+.card .num{font-size:11px;letter-spacing:.17em;color:var(--muted)}.card h2{font-size:24px;margin:16px 0 4px}.card p{margin:0;color:var(--muted);line-height:1.45}.card footer{margin-top:auto;padding-top:20px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.badge{font-size:10px;letter-spacing:.11em;text-transform:uppercase;border-radius:999px;padding:5px 8px;border:1px solid currentColor}.ready{color:var(--ready)}.study{color:var(--study)}
+.arrow{font-size:22px}
+.note{color:var(--muted);font-size:12px;margin-top:14px}
+@media(max-width:720px){
+  .shell{padding-left:12px;padding-right:12px}.map-wrap{margin-top:22px;border-radius:22px}
+  .map{min-height:360px;aspect-ratio:auto}.map svg{height:320px}
+  .pin.vegas{left:22%;top:33%}.pin.kona{left:8%;top:43%}.pin.stg{left:22%;top:33%;transform:translate(22px,32px)}
+  .worlds{grid-template-columns:1fr}.card{min-height:160px}
+  .map-head span{display:none}
+}
+@media(prefers-reduced-motion:no-preference){.pin::before{animation:pulse 2.4s ease-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(216,180,106,.02),0 0 36px rgba(216,180,106,.7)}}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="eyebrow">Caldas Worlds · live atlas</div>
+  <h1>Pick a place.<br>Enter the world.</h1>
+  <p class="lede">One mobile-first doorway into the 3D environments already built. The map shows where a live world or scene exists today.</p>
+
+  <section class="map-wrap" aria-label="3D worlds map">
+    <div class="map-head"><strong>Available regions</strong><span>Tap a glowing region to enter</span></div>
+    <div class="map">
+      <svg viewBox="0 0 1000 500" role="img" aria-label="Stylized world map">
+        <g class="grid">
+          <path d="M0 125H1000M0 250H1000M0 375H1000M250 0V500M500 0V500M750 0V500"/>
+        </g>
+        <g class="land">
+          <path d="M64 91l48-35 76 1 58 28 39 47-17 37-49 11-20 39-47 24-47-16-34-61z"/>
+          <path d="M214 253l47 18 30 45-2 63-29 72-22-23-14-60-26-62z"/>
+          <path d="M420 85l58-28 67 9 31 25-13 31-45 5-16 29-58-2-34-26z"/>
+          <path d="M459 178l55-10 50 29 25 59-20 78-48 53-39-29-23-86z"/>
+          <path d="M551 82l88-34 91 16 71 43 80 25 44 48-31 45-92 7-38 31-84-8-51-39-62-18-31-50z"/>
+          <path d="M811 325l62-18 58 25 9 49-40 31-67-9-33-38z"/>
+          <path d="M932 232l22-5 15 13-10 13-23-2z"/>
+        </g>
+      </svg>
+      <a class="pin vegas" data-label="Las Vegas" href="worlds/vegas/" aria-label="Enter Las Vegas 3D world"></a>
+      <a class="pin kona" data-label="Kona" href="worlds/kona/" aria-label="Enter Kona 3D island"></a>
+      <a class="pin stg" data-label="St. George" href="worlds/st-george/" aria-label="Enter St. George 3D scene"></a>
+    </div>
+  </section>
+
+  <section class="worlds">
+    <a class="card" href="worlds/vegas/"><span class="num">01 · Nevada</span><h2>Las Vegas</h2><p>Bellagio, the Strip, lake, fountains and walkable city context.</p><footer><span class="badge ready">Full 3D world</span><span class="arrow">↗</span></footer></a>
+    <a class="card" href="worlds/kona/"><span class="num">02 · Hawaiʻi</span><h2>Kona</h2><p>The Big Island 3D experience, streamed from the existing Kona world.</p><footer><span class="badge ready">Full 3D island</span><span class="arrow">↗</span></footer></a>
+    <a class="card" href="worlds/st-george/"><span class="num">03 · Utah</span><h2>St. George</h2><p>The current red-rock procedural 3D installation from Canyon Museum.</p><footer><span class="badge study">3D scene</span><span class="arrow">↗</span></footer></a>
+  </section>
+  <p class="note">World status is intentionally explicit: “full world” means a navigable environment; “3D scene” means a built installation that has not yet been expanded into a complete terrain world.</p>
+</main>
+</body>
+</html>

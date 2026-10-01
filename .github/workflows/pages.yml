@@ -63,6 +63,7 @@ jobs:
           mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/vegas/assets _site/world-runtime
           cp portal/index.html _site/index.html
           cp world-runtime/core.js _site/world-runtime/core.js
+          cp world-runtime/places.js _site/world-runtime/places.js
 
           # Vegas: source-built runtime + same-origin assets
           cp -R assets/. _site/worlds/vegas/assets/
@@ -84,6 +85,7 @@ jobs:
           test -f _site/worlds/kona/src/islandRuntime.js
           test -f _site/worlds/st-george/index.html
           test -f _site/world-runtime/core.js
+          test -f _site/world-runtime/places.js
 
       - name: Sync built Vegas fallback into repository
         run: |

@@ -69,6 +69,7 @@ jobs:
           cp portal/index.html _site/index.html
           cp world-runtime/core.js _site/world-runtime/core.js
           cp world-runtime/places.js _site/world-runtime/places.js
+          cp world-runtime/geo-terrain.js _site/world-runtime/geo-terrain.js
 
           # Vegas: source-built runtime + same-origin assets
           cp -R assets/. _site/worlds/vegas/assets/
@@ -99,6 +100,7 @@ jobs:
           test -f _site/worlds/nice/geo/terrain.jpg
           test -f _site/world-runtime/core.js
           test -f _site/world-runtime/places.js
+          test -f _site/world-runtime/geo-terrain.js
 
       - name: Sync generated geo assets and Vegas fallback into repository
         run: |

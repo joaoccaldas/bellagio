@@ -1,0 +1,35 @@
+{
+  "schema": "caldas.world/v1",
+  "id": "vegas",
+  "name": "Las Vegas",
+  "version": 1,
+  "defaultZone": "bellagio",
+  "runtime": {
+    "mode": "compatibility",
+    "entrypoint": "/index.html"
+  },
+  "zones": [
+    {
+      "id": "bellagio",
+      "name": "Bellagio",
+      "status": "legacy-inline",
+      "assetBase": "/assets/",
+      "lod": {
+        "lod0": [],
+        "lod1": [],
+        "lod2": []
+      },
+      "systems": [
+        "fountains",
+        "time-of-day",
+        "navigation",
+        "evidence"
+      ]
+    }
+  ],
+  "roadmap": {
+    "streaming": true,
+    "sharedEngine": "@caldas/world-engine",
+    "assetManifest": "/worlds/vegas/assets.json"
+  }
+}

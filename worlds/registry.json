@@ -27,7 +27,8 @@
       "kind": "multi-location-world",
       "route": "worlds/st-george/",
       "source": "joaoccaldas/canyonmuseum",
-      "places": 5
+      "places": 7,
+      "era": "2022-10-28/29"
     },
     {
       "id": "nice",

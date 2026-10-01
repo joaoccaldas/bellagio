@@ -1,4 +1,4 @@
-name: Deploy Bellagio World
+name: Deploy Caldas Worlds
 
 on:
   push:
@@ -11,41 +11,71 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: caldas-worlds-pages
   cancel-in-progress: true
 
 jobs:
-  validate:
+  validate-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate required world files
+
+      - name: Validate world contracts
         run: |
-          test -f index.html
           test -f deployment.yaml
           test -f worlds/world.schema.json
           test -f worlds/vegas/world.json
+          test -f worlds/registry.json
+          test -f portal/index.html
           python -m json.tool worlds/world.schema.json >/dev/null
           python -m json.tool worlds/vegas/world.json >/dev/null
-      - name: Reject broken absolute localhost asset references
+          python -m json.tool worlds/registry.json >/dev/null
+
+      - name: Reject localhost references
         run: |
-          if grep -R -nE 'https?://(127\.0\.0\.1|localhost)' index.html worlds deployment.yaml; then
+          if grep -R -nE 'https?://(127\.0\.0\.1|localhost)' portal worlds deployment.yaml web/src web/index.template.html; then
             echo "Localhost reference found in deployable world"
             exit 1
           fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build mobile-stable Vegas world
+        working-directory: web
+        run: |
+          npm ci
+          OUT_DIR=../_site/worlds/vegas node build.mjs
+
+      - name: Assemble world atlas
+        run: |
+          mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/vegas/assets
+          cp portal/index.html _site/index.html
+          cp portal/worlds/kona/index.html _site/worlds/kona/index.html
+          cp portal/worlds/st-george/index.html _site/worlds/st-george/index.html
+          cp worlds/registry.json _site/worlds/registry.json
+          cp -R assets/. _site/worlds/vegas/assets/
+          touch _site/.nojekyll
+          test -f _site/index.html
+          test -f _site/worlds/vegas/index.html
+          test -f _site/worlds/kona/index.html
+          test -f _site/worlds/st-george/index.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
 
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: validate
+    needs: validate-build
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - name: Deploy to GitHub Pages
+      - name: Deploy atlas
         id: deployment
         uses: actions/deploy-pages@v4

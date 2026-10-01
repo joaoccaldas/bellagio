@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#170d09">
-<title>St. George · Caldas Worlds</title>
+<title>St. George 2022 · Caldas Worlds</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#170d09;color:#fff;font-family:Inter,system-ui,sans-serif}
 *{box-sizing:border-box}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
@@ -14,7 +14,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#170d09;col
 </head>
 <body>
 <canvas id="c" aria-label="Interactive St. George Utah 3D world"></canvas>
-<div class="caption"><h1 id="placeTitle">St. George</h1><p id="placeText">Race country from Sand Hollow through Snow Canyon and Red Hills into downtown.</p><div class="hint">Drag to orbit · pinch / wheel to zoom · Places to travel</div></div>
+<div class="caption"><h1 id="placeTitle">St. George</h1><p id="placeText">IRONMAN 70.3 World Championship race world · October 28–29, 2022.</p><div class="hint">Drag to orbit · pinch / wheel to zoom · Places to travel</div></div>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.160.0","three/":"https://esm.sh/three@0.160.0/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -95,7 +95,7 @@ ground.geometry.computeVertexNormals(); scene.add(ground);
  [-105,-25,15,20],[96,68,20,24]
 ].forEach(([x,z,r,h])=>mesa(x,z,r,h));
 
-// Downtown / T2 / finish
+// Downtown 2022 championship venue: Town Square Park / finish / T2 / Tabernacle
 for(let ix=-18;ix<=18;ix+=6) for(let iz=-14;iz<=14;iz+=7){
  const h=2.8+((Math.abs(ix*17+iz*11)%7));
  box(ix,h*.02,iz,4.4,h,4.8,MAT.city,'downtown_building');
@@ -105,6 +105,18 @@ road([[-42,5],[-22,4],[0,3],[28,2],[45,0]],2.6);
 road([[0,-42],[0,-20],[0,5],[0,28]],2.4);
 finishArch(0,-4);
 box(-7,.1,-4,5,.18,2,MAT.glow,'transition_t2');
+// Town Square Park
+const townPark=new THREE.Mesh(new THREE.PlaneGeometry(18,14),MAT.green);townPark.rotation.x=-Math.PI/2;townPark.position.set(8,.21,8);scene.add(townPark);
+for(let i=0;i<8;i++){const a=i/8*Math.PI*2;cyl(8+Math.cos(a)*6,.2,8+Math.sin(a)*4,.22,3.6,MAT.dark,8);}
+// Tabernacle / T2 marker
+box(-11,.1,2,8,5.8,6,MAT.white,'tabernacle');
+box(-11,5.9,2,8.6,.65,6.6,MAT.roof);
+cyl(-11,6.5,2,1.0,3.2,MAT.white,12);
+// race expo / finish structures
+for(let i=0;i<6;i++) box(3+i*2.1,.1,-8,1.6,2.2,1.8,i%2?MAT.white:MAT.glow,'race_village_tent');
+// Dixie Convention Center
+box(34,.1,-29,22,7.5,15,MAT.city,'dixie_convention_center');
+box(34,7.7,-29,22.5,.7,15.5,MAT.roof);
 
 // Red Hills area
 for(let i=0;i<12;i++){
@@ -138,9 +150,11 @@ const route=new THREE.Line(
 scene.add(route);
 
 const views={
- overview:{pos:[88,78,100],target:[0,4,5],title:'St. George',text:'Race country from Sand Hollow through Snow Canyon and Red Hills into downtown.'},
+ overview:{pos:[88,78,100],target:[0,4,5],title:'St. George · Oct 28–29, 2022',text:'IRONMAN 70.3 World Championship race world from Sand Hollow through Snow Canyon and Red Hills into downtown.'},
  sand_hollow:{pos:[98,28,-94],target:[72,1,-62],title:'Sand Hollow / T1',text:'Reservoir swim and first transition zone.'},
- downtown:{pos:[29,19,31],target:[0,3,-2],title:'Downtown / T2 + finish',text:'Tabernacle and Main Street race center and finish.'},
+ town_square:{pos:[27,16,28],target:[8,3,8],title:'Town Square Park / finish',text:'IRONMAN Village, finish line, post-race and shuttle hub in the 2022 championship venue.'},
+ t2:{pos:[12,12,22],target:[-11,3,2],title:'Tabernacle St / 100W · T2',text:'Transition 2 and run-bag area for the 2022 championship.'},
+ convention:{pos:[55,20,-5],target:[34,4,-29],title:'Dixie Convention Center',text:'Welcome banquet and World Championship celebration venue.'},
  red_hills:{pos:[-4,24,52],target:[-28,4,27],title:'Red Hills',text:'Run-course terrain and Red Hills Parkway corridor.'},
  snow_canyon:{pos:[-13,42,86],target:[-48,9,73],title:'Snow Canyon',text:'Signature red-rock bike corridor and climbing landscape.'}
 };
@@ -149,7 +163,9 @@ const places=[
  {id:'sand_hollow',label:'Sand Hollow / T1',description:'Reservoir, swim and transition'},
  {id:'snow_canyon',label:'Snow Canyon',description:'Red-rock bike corridor'},
  {id:'red_hills',label:'Red Hills',description:'Parkway and run terrain'},
- {id:'downtown',label:'Downtown / finish',description:'Tabernacle, Main Street and T2'}
+ {id:'town_square',label:'Town Square Park / finish',description:'IRONMAN Village + finish'},
+ {id:'t2',label:'Tabernacle St / 100W · T2',description:'2022 Transition 2'},
+ {id:'convention',label:'Dixie Convention Center',description:'Race-week ceremonies'}
 ];
 
 let cancelFlight=null;
@@ -173,7 +189,7 @@ createFrameLoop((dt,t)=>{
  if(!reducedMotion) reservoir.material.opacity=.84+.04*Math.sin(t*.55);
  controls.update(); renderer.render(scene,camera);
 });
-markWorldReady({id:'st-george',detail:{kind:'multi-location-world',places:places.length}});
+markWorldReady({id:'st-george',detail:{kind:'multi-location-world',places:places.length,date:'2022-10-28/29'}});
 </script>
 </body>
 </html>

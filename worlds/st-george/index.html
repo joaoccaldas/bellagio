@@ -64,6 +64,9 @@ const MAT={
 function box(x,y,z,w,h,d,mat,name=''){
  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y+h/2,z); m.name=name; scene.add(m); return m;
 }
+function cyl(x,y,z,r,h,mat,seg=12){
+ const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),mat); m.position.set(x,y+h/2,z); scene.add(m); return m;
+}
 function mesa(x,z,r=12,h=10,mat=MAT.mesa){
  const m=new THREE.Mesh(new THREE.CylinderGeometry(r*.72,r,h,coarse?10:18,4),mat);
  m.position.set(x,h/2,z); m.rotation.y=(x+z)*.03; scene.add(m); return m;

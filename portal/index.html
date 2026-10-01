@@ -24,7 +24,7 @@ h1{font-size:clamp(34px,9vw,76px);line-height:.95;letter-spacing:-.04em;margin:1
 .pin{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(7,16,20,.72);backdrop-filter:blur(8px);text-decoration:none;z-index:3}
 .pin::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 8px rgba(216,180,106,.12),0 0 28px rgba(216,180,106,.55)}
 .pin::after{content:attr(data-label);position:absolute;left:50%;top:48px;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:650;padding:6px 9px;border-radius:999px;background:rgba(7,16,20,.86);border:1px solid var(--line)}
-.pin.vegas{left:18.0%;top:30%}.pin.kona{left:6.7%;top:39.1%}.pin.stg{left:18.5%;top:29.4%}
+.pin.vegas{left:18.0%;top:30%}.pin.kona{left:6.7%;top:39.1%}.pin.stg{left:18.5%;top:29.4%}.pin.nice{left:49.6%;top:27.5%}
 .pin.stg{transform:translate(22px,24px)}
 .pin:hover,.pin:focus-visible{outline:none;border-color:var(--accent);scale:1.06}
 .worlds{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
@@ -37,7 +37,7 @@ h1{font-size:clamp(34px,9vw,76px);line-height:.95;letter-spacing:-.04em;margin:1
 @media(max-width:720px){
   .shell{padding-left:12px;padding-right:12px}.map-wrap{margin-top:22px;border-radius:22px}
   .map{min-height:360px;aspect-ratio:auto}.map svg{height:320px}
-  .pin.vegas{left:22%;top:33%}.pin.kona{left:8%;top:43%}.pin.stg{left:22%;top:33%;transform:translate(22px,32px)}
+  .pin.vegas{left:22%;top:33%}.pin.kona{left:8%;top:43%}.pin.stg{left:22%;top:33%;transform:translate(22px,32px)}.pin.nice{left:50%;top:31%}
   .worlds{grid-template-columns:1fr}.card{min-height:160px}
   .map-head span{display:none}
 }
@@ -69,7 +69,8 @@ h1{font-size:clamp(34px,9vw,76px);line-height:.95;letter-spacing:-.04em;margin:1
       </svg>
       <a class="pin vegas" data-label="Las Vegas" href="worlds/vegas/" aria-label="Enter Las Vegas 3D world"></a>
       <a class="pin kona" data-label="Kona" href="worlds/kona/" aria-label="Enter Kona 3D island"></a>
-      <a class="pin stg" data-label="St. George" href="worlds/st-george/" aria-label="Enter St. George 3D scene"></a>
+      <a class="pin stg" data-label="St. George" href="worlds/st-george/" aria-label="Enter St. George 3D world"></a>
+      <a class="pin nice" data-label="Nice" href="worlds/nice/" aria-label="Enter Nice 3D world"></a>
     </div>
   </section>
 
@@ -77,6 +78,7 @@ h1{font-size:clamp(34px,9vw,76px);line-height:.95;letter-spacing:-.04em;margin:1
     <a class="card" href="worlds/vegas/"><span class="num">01 · Nevada</span><h2>Las Vegas</h2><p>Bellagio, the Strip, lake, fountains and walkable city context.</p><footer><span class="badge ready">Full 3D world</span><span class="arrow">↗</span></footer></a>
     <a class="card" href="worlds/kona/"><span class="num">02 · Hawaiʻi</span><h2>Kona</h2><p>The Big Island 3D experience, streamed from the existing Kona world.</p><footer><span class="badge ready">Full 3D island</span><span class="arrow">↗</span></footer></a>
     <a class="card" href="worlds/st-george/"><span class="num">03 · Utah</span><h2>St. George</h2><p>A navigable red-rock race world with Sand Hollow, Snow Canyon, Red Hills and downtown.</p><footer><span class="badge ready">Multi-location world</span><span class="arrow">↗</span></footer></a>
+      <a class="card" href="worlds/nice/"><span class="num">04 · France</span><h2>Nice</h2><p>World Championship race world from Plage des Ponchettes and Promenade des Anglais into the Alpes-Maritimes.</p><footer><span class="badge ready">Multi-location world</span><span class="arrow">↗</span></footer></a>
   </section>
   <p class="note">World status is intentionally explicit: “full world” means a navigable environment; “3D scene” means a built installation that has not yet been expanded into a complete terrain world.</p>
 </main>

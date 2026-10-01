@@ -8,112 +8,172 @@
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#170d09;color:#fff;font-family:Inter,system-ui,sans-serif}
 *{box-sizing:border-box}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.top{position:fixed;z-index:5;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}
-.top a,.chip{pointer-events:auto;text-decoration:none;color:#fff;background:rgba(20,10,7,.72);border:1px solid rgba(255,172,96,.28);border-radius:999px;padding:9px 12px;backdrop-filter:blur(10px);font-size:12px}
-.chip{color:#ffc18a}.caption{position:fixed;z-index:4;left:16px;right:16px;bottom:max(18px,env(safe-area-inset-bottom));max-width:620px;pointer-events:none;text-shadow:0 2px 20px #000}.caption h1{font-size:clamp(30px,8vw,56px);margin:0 0 6px;line-height:.95}.caption p{margin:0;color:#e5c8b1;line-height:1.45;font-size:13px}.hint{margin-top:8px;font-size:11px;color:#c99470}
+.caption{position:fixed;z-index:4;left:16px;right:16px;bottom:max(18px,env(safe-area-inset-bottom));max-width:560px;pointer-events:none;text-shadow:0 2px 20px #000}
+.caption h1{font-size:clamp(28px,7vw,52px);margin:0 0 5px;line-height:.95}.caption p{margin:0;color:#ead0bc;font-size:12px;line-height:1.4}.hint{margin-top:7px;font-size:10px;color:#c99a78}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div class="top"><span></span><span class="chip">St. George · Utah</span></div>
-<div class="caption"><h1>Red rock study</h1><p>A standalone procedural St. George scene, extracted from the Canyon Museum art-world language and rebuilt as its own world package.</p><div class="hint">Drag to orbit · pinch / wheel to zoom</div></div>
+<canvas id="c" aria-label="Interactive St. George Utah 3D world"></canvas>
+<div class="caption"><h1 id="placeTitle">St. George</h1><p id="placeText">Race country from Sand Hollow through Snow Canyon and Red Hills into downtown.</p><div class="hint">Drag to orbit · pinch / wheel to zoom · Places to travel</div></div>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.160.0","three/":"https://esm.sh/three@0.160.0/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { detectDevice, installWorldNav, installResize, createFrameLoop, markWorldReady } from '../../world-runtime/core.js';
+import { installPlacesPanel, flyCamera } from '../../world-runtime/places.js';
 
-const { coarse, reducedMotion } = detectDevice();
-const canvas = document.querySelector('#c');
-const renderer = new THREE.WebGLRenderer({canvas,antialias:!coarse,powerPreference:'high-performance'});
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+const { coarse, reducedMotion }=detectDevice();
+const canvas=document.querySelector('#c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:!coarse,powerPreference:'high-performance'});
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.08;
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x170d09);
-scene.fog = new THREE.FogExp2(0x2a120b, .018);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x1c0e09);
+scene.fog=new THREE.FogExp2(0x6c3b28,.004);
 
-const camera = new THREE.PerspectiveCamera(48,1,.1,250);
-camera.position.set(9,6.5,12);
+const camera=new THREE.PerspectiveCamera(48,1,.1,900);
+camera.position.set(85,72,95);
+const controls=new OrbitControls(camera,canvas);
+controls.enableDamping=true; controls.dampingFactor=.065;
+controls.target.set(0,4,0);
+controls.minDistance=2; controls.maxDistance=230;
+controls.maxPolarAngle=Math.PI*.495;
+controls.screenSpacePanning=true;
+controls.zoomSpeed=1.0; controls.panSpeed=.8; controls.rotateSpeed=.55;
+controls.touches.ONE=THREE.TOUCH.ROTATE; controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
 
-const controls = new OrbitControls(camera,canvas);
-controls.enableDamping=true;
-controls.dampingFactor=.07;
-controls.target.set(0,2.3,0);
-controls.minDistance=5;
-controls.maxDistance=30;
-controls.maxPolarAngle=Math.PI*.49;
+scene.add(new THREE.HemisphereLight(0xffd6b0,0x32140d,1.65));
+const sun=new THREE.DirectionalLight(0xffb66f,4.4); sun.position.set(-45,95,55); scene.add(sun);
 
-scene.add(new THREE.HemisphereLight(0xffd6b0,0x35120b,2.0));
-const sun = new THREE.DirectionalLight(0xffb56d,4.2);
-sun.position.set(-5,11,8); scene.add(sun);
+const MAT={
+ desert:new THREE.MeshStandardMaterial({color:0x6f2a1c,roughness:.98}),
+ mesa:new THREE.MeshStandardMaterial({color:0x923b24,roughness:.94}),
+ dark:new THREE.MeshStandardMaterial({color:0x401710,roughness:.98}),
+ road:new THREE.MeshStandardMaterial({color:0x2e2b29,roughness:.98}),
+ city:new THREE.MeshStandardMaterial({color:0xcab8a3,roughness:.86}),
+ roof:new THREE.MeshStandardMaterial({color:0x765443,roughness:.9}),
+ water:new THREE.MeshPhysicalMaterial({color:0x176f86,roughness:.18,metalness:.02,transparent:true,opacity:.88}),
+ green:new THREE.MeshStandardMaterial({color:0x536c39,roughness:.95}),
+ glow:new THREE.MeshBasicMaterial({color:0xff7d32,toneMapped:false}),
+ white:new THREE.MeshStandardMaterial({color:0xf2eee8,roughness:.72}),
+ black:new THREE.MeshStandardMaterial({color:0x171717,roughness:.8})
+};
 
-const ground = new THREE.Mesh(
- new THREE.PlaneGeometry(90,90,1,1),
- new THREE.MeshStandardMaterial({color:0x35170f,roughness:1})
-);
-ground.rotation.x=-Math.PI/2; scene.add(ground);
-
-const rockMat = new THREE.MeshStandardMaterial({color:0x87311f,roughness:.82,metalness:.02});
-const darkMat = new THREE.MeshStandardMaterial({color:0x4e1c15,roughness:.9});
-const glowMat = new THREE.MeshBasicMaterial({color:0xff7f3e,toneMapped:false});
-
-const heights=[2.1,3.0,4.2,5.2,4.5,3.3,2.2];
-const group=new THREE.Group();
-for(let i=0;i<heights.length;i++){
- const h=heights[i];
- const geo=new THREE.BoxGeometry(.34,h,2.0,1,5,1);
- const pos=geo.attributes.position;
- for(let j=0;j<pos.count;j++){
-   const y=pos.getY(j), z=pos.getZ(j);
-   const wobble=Math.sin((y+h*.5)*2.1+i*.9)*.07 + Math.sin(z*3.4+i)*.04;
-   pos.setX(j,pos.getX(j)+wobble);
- }
- geo.computeVertexNormals();
- const mesh=new THREE.Mesh(geo,i%2?rockMat:darkMat);
- mesh.position.set((i-3)*.78,h/2,0);
- mesh.rotation.y=(i-3)*.055;
- group.add(mesh);
+function box(x,y,z,w,h,d,mat,name=''){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y+h/2,z); m.name=name; scene.add(m); return m;
 }
-scene.add(group);
+function mesa(x,z,r=12,h=10,mat=MAT.mesa){
+ const m=new THREE.Mesh(new THREE.CylinderGeometry(r*.72,r,h,coarse?10:18,4),mat);
+ m.position.set(x,h/2,z); m.rotation.y=(x+z)*.03; scene.add(m); return m;
+}
+function road(points,width=2.2){
+ const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],.16,p[1])));
+ const geo=new THREE.TubeGeometry(curve,Math.max(20,points.length*12),width,6,false);
+ const m=new THREE.Mesh(geo,MAT.road); m.scale.y=.05; scene.add(m); return m;
+}
+function finishArch(x,z){
+ box(x-2.6,.1,z,.28,3.8,.28,MAT.black); box(x+2.6,.1,z,.28,3.8,.28,MAT.black); box(x,3.55,z,5.5,.35,.3,MAT.white);
+ for(let i=-2;i<=2;i++) box(x+i*.95,3.6,z-.17,.45,.25,.06,i%2?MAT.black:MAT.white);
+}
 
-const curvePts=[
- new THREE.Vector3(-2.5,.45,1.06),new THREE.Vector3(-1.65,1.45,1.08),
- new THREE.Vector3(-.75,2.8,1.1),new THREE.Vector3(.1,4.55,1.1),
- new THREE.Vector3(1.1,3.7,1.08),new THREE.Vector3(2.45,2.1,1.06)
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(360,360,40,40),MAT.desert);
+ground.rotation.x=-Math.PI/2;
+const gp=ground.geometry.attributes.position;
+for(let i=0;i<gp.count;i++){
+ const x=gp.getX(i),y=gp.getY(i);
+ const h=(Math.sin(x*.075)+Math.cos(y*.06)+Math.sin((x+y)*.035))*1.1;
+ gp.setZ(i,h);
+}
+ground.geometry.computeVertexNormals(); scene.add(ground);
+
+// Regional red-rock skyline
+[
+ [-95,70,25,28],[-76,88,18,36],[-58,82,15,30],[-42,92,14,24],
+ [82,-78,20,18],[100,-64,14,24],[112,-42,18,30],
+ [-105,-25,15,20],[96,68,20,24]
+].forEach(([x,z,r,h])=>mesa(x,z,r,h));
+
+// Downtown / T2 / finish
+for(let ix=-18;ix<=18;ix+=6) for(let iz=-14;iz<=14;iz+=7){
+ const h=2.8+((Math.abs(ix*17+iz*11)%7));
+ box(ix,h*.02,iz,4.4,h,4.8,MAT.city,'downtown_building');
+ box(ix,h+.04,iz,4.6,.5,5,MAT.roof);
+}
+road([[-42,5],[-22,4],[0,3],[28,2],[45,0]],2.6);
+road([[0,-42],[0,-20],[0,5],[0,28]],2.4);
+finishArch(0,-4);
+box(-7,.1,-4,5,.18,2,MAT.glow,'transition_t2');
+
+// Red Hills area
+for(let i=0;i<12;i++){
+ const a=i/12*Math.PI*2, r=10+(i%3)*4;
+ mesa(-31+Math.cos(a)*r,30+Math.sin(a)*r,2.2+(i%4)*.8,3.8+(i%5)*1.2,i%2?MAT.dark:MAT.mesa);
+}
+const golf=new THREE.Mesh(new THREE.CircleGeometry(15,30),MAT.green); golf.rotation.x=-Math.PI/2; golf.position.set(-22,.22,21); scene.add(golf);
+road([[-2,17],[-12,19],[-23,24],[-38,31],[-49,39]],2.2);
+
+// Snow Canyon corridor
+for(let i=0;i<18;i++){
+ const z=50+i*3.4;
+ mesa(-62-(i%3)*6,z,5+(i%4),8+(i%6)*2.2,i%2?MAT.mesa:MAT.dark);
+ mesa(-32+(i%4)*4,z+1.5,4+(i%3),6+(i%5)*2,i%2?MAT.dark:MAT.mesa);
+}
+road([[-45,38],[-49,50],[-51,65],[-50,82],[-46,101]],2.4);
+
+// Sand Hollow / T1
+const reservoir=new THREE.Mesh(new THREE.CircleGeometry(27,48),MAT.water);
+reservoir.rotation.x=-Math.PI/2; reservoir.scale.set(1.5,.8,1); reservoir.position.set(74,.24,-64); scene.add(reservoir);
+for(let i=0;i<14;i++){const a=i/14*Math.PI*2;mesa(74+Math.cos(a)*34,-64+Math.sin(a)*26,3+(i%4),3+(i%5)*1.5);}
+box(53,.1,-48,10,.2,5,MAT.glow,'transition_t1');
+road([[54,-48],[40,-36],[30,-25],[21,-12],[12,-3]],2.3);
+
+// Course hint ribbon joining zones
+const routePts=[[55,-48],[38,-32],[22,-18],[8,-4],[-8,8],[-24,21],[-43,38],[-50,58],[-49,78],[-43,96]];
+const route=new THREE.Line(
+ new THREE.BufferGeometry().setFromPoints(routePts.map(([x,z])=>new THREE.Vector3(x,.8,z))),
+ new THREE.LineBasicMaterial({color:0xff6030})
+);
+scene.add(route);
+
+const views={
+ overview:{pos:[88,78,100],target:[0,4,5],title:'St. George',text:'Race country from Sand Hollow through Snow Canyon and Red Hills into downtown.'},
+ sand_hollow:{pos:[98,28,-94],target:[72,1,-62],title:'Sand Hollow / T1',text:'Reservoir swim and first transition zone.'},
+ downtown:{pos:[29,19,31],target:[0,3,-2],title:'Downtown / T2 + finish',text:'Tabernacle and Main Street race center and finish.'},
+ red_hills:{pos:[-4,24,52],target:[-28,4,27],title:'Red Hills',text:'Run-course terrain and Red Hills Parkway corridor.'},
+ snow_canyon:{pos:[-13,42,86],target:[-48,9,73],title:'Snow Canyon',text:'Signature red-rock bike corridor and climbing landscape.'}
+};
+const places=[
+ {id:'overview',label:'Whole world',description:'St. George race geography'},
+ {id:'sand_hollow',label:'Sand Hollow / T1',description:'Reservoir, swim and transition'},
+ {id:'snow_canyon',label:'Snow Canyon',description:'Red-rock bike corridor'},
+ {id:'red_hills',label:'Red Hills',description:'Parkway and run terrain'},
+ {id:'downtown',label:'Downtown / finish',description:'Tabernacle, Main Street and T2'}
 ];
-const curve=new THREE.CatmullRomCurve3(curvePts);
-const seam=new THREE.Mesh(new THREE.TubeGeometry(curve,72,.055,8,false),glowMat);
-scene.add(seam);
 
-for(let k=0;k<36;k++){
- const h=.35+Math.random()*1.6;
- const r=.15+Math.random()*.55;
- const geo=new THREE.DodecahedronGeometry(r,0);
- const m=new THREE.Mesh(geo,Math.random()>.25?rockMat:darkMat);
- const a=Math.random()*Math.PI*2, d=4+Math.random()*13;
- m.position.set(Math.cos(a)*d,h*.3,Math.sin(a)*d);
- m.scale.y=h;
- m.rotation.set(Math.random(),Math.random(),Math.random());
- scene.add(m);
+let cancelFlight=null;
+function goto(id){
+ const v=views[id]||views.overview;
+ cancelFlight?.();
+ cancelFlight=flyCamera({
+  camera,controls,
+  toPosition:new THREE.Vector3(...v.pos),
+  toTarget:new THREE.Vector3(...v.target),
+  duration:id==='overview'?1.4:1.15
+ });
+ document.querySelector('#placeTitle').textContent=v.title;
+ document.querySelector('#placeText').textContent=v.text;
 }
 
-const mesa = new THREE.Mesh(
- new THREE.CylinderGeometry(14,18,2.6,18,4,false),
- new THREE.MeshStandardMaterial({color:0x5b2117,roughness:1})
-);
-mesa.position.set(-30,1.2,-22); mesa.scale.y=1.4; scene.add(mesa);
-
-installWorldNav({ href: '../../' });
-installResize({ renderer, camera, quality: () => 'high' });
-let elapsed = 0;
-createFrameLoop((dt) => {
- elapsed += dt;
- if (!reducedMotion) seam.material.color.setHSL(.055,.95,.58+.05*Math.sin(elapsed*.7));
- controls.update();
- renderer.render(scene,camera);
+installWorldNav({href:'../../'});
+installPlacesPanel({title:'St. George places',places,initial:'overview',onSelect:p=>goto(p.id)});
+installResize({renderer,camera,quality:()=>coarse?'balanced':'high'});
+createFrameLoop((dt,t)=>{
+ if(!reducedMotion) reservoir.material.opacity=.84+.04*Math.sin(t*.55);
+ controls.update(); renderer.render(scene,camera);
 });
-markWorldReady({ id: 'st-george', detail: { kind: 'scene' } });
+markWorldReady({id:'st-george',detail:{kind:'multi-location-world',places:places.length}});
 </script>
-</body></html>
+</body>
+</html>

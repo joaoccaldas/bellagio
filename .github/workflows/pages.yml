@@ -78,7 +78,7 @@ jobs:
           old="window.__KONA_ASSET_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'../web/public/assets/':'https://joaoccaldas.github.io/studio-kona/web/public/assets/';"
           s=s.replace(old,"window.__KONA_ASSET_BASE='./assets/';")
           s=s.replace('<body>','<body>')
-s=s.replace('<script type="module">\nimport \'./src/islandRuntime.js\';\n</script>', '<script type="module">import { installWorldNav, markWorldReady } from \'../../world-runtime/core.js\'; installWorldNav({href:\'../../\'}); import(\'./src/islandRuntime.js\').then(()=>markWorldReady({id:\'kona\',detail:{kind:\'full-island\'}}));</script>')
+          s=s.replace('<script type="module">\nimport \'./src/islandRuntime.js\';\n</script>', '<script type="module">import { installWorldNav, markWorldReady } from \'../../world-runtime/core.js\'; installWorldNav({href:\'../../\'}); import(\'./src/islandRuntime.js\').then(()=>markWorldReady({id:\'kona\',detail:{kind:\'full-island\'}}));</script>')
           p.write_text(s)
           PY
 

@@ -36,7 +36,7 @@ const save = () => { try { localStorage.setItem('bellagio.settings', JSON.string
 
 // ------------------------------------------------------------------ renderer
 const canvas = $('#c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', logarithmicDepthBuffer: false });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: 'high-performance', logarithmicDepthBuffer: false });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.AgXToneMapping;
 renderer.shadowMap.enabled = false;
@@ -46,12 +46,12 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.dampingFactor = .07; controls.zoomToCursor = true;
 controls.maxDistance = 9000; controls.minDistance = .5; controls.maxPolarAngle = Math.PI * .495;
 
-const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: coarse ? 0 : 2 }));
 composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .5, .6, .92);
 composer.addPass(bloom);
 const grade = new ShaderPass({
-  uniforms: { tDiffuse: { value: null }, uVig: { value: .45 }, uTime: { value: 0 }, uGrain: { value: .35 }, uRes: { value: new THREE.Vector2(1, 1) } },
+  uniforms: { tDiffuse: { value: null }, uVig: { value: coarse ? .28 : .42 }, uTime: { value: 0 }, uGrain: { value: coarse ? .06 : .16 }, uRes: { value: new THREE.Vector2(1, 1) } },
   vertexShader: 'varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig,uTime,uGrain; uniform vec2 uRes; varying vec2 vUv;
     float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
@@ -65,13 +65,22 @@ composer.addPass(grade);
 composer.addPass(new OutputPass());
 
 function resize() {
-  const pr = Math.min(devicePixelRatio, S.quality === 'high' ? 2 : S.quality === 'ultra' ? 2.5 : 1.25);
+  const cap = coarse ? (S.quality === 'ultra' ? 1.35 : S.quality === 'high' ? 1.2 : 1.0) : (S.quality === 'high' ? 1.75 : S.quality === 'ultra' ? 2 : 1.25);
+  const pr = Math.min(devicePixelRatio, cap);
   renderer.setPixelRatio(pr); composer.setPixelRatio(pr);
   renderer.setSize(innerWidth, innerHeight, false); composer.setSize(innerWidth, innerHeight);
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   grade.uniforms.uRes.value.set(innerWidth * pr, innerHeight * pr);
 }
-addEventListener('resize', resize);
+let resizeRAF = 0;
+addEventListener('resize', () => {
+  cancelAnimationFrame(resizeRAF);
+  resizeRAF = requestAnimationFrame(resize);
+}, { passive: true });
+if (window.visualViewport) visualViewport.addEventListener('resize', () => {
+  cancelAnimationFrame(resizeRAF);
+  resizeRAF = requestAnimationFrame(resize);
+}, { passive: true });
 
 // ------------------------------------------------------------------ sky + lights (real-time parts)
 const sky = new Sky(); sky.scale.setScalar(9000); scene.add(sky);
@@ -712,7 +721,9 @@ function frame() {
   const inn = indoors();
   if (inn !== wasIn) { wasIn = inn; scene.fog.density = inn ? 0 : .000025; applyTime(); }
   if (lakeRefl) lakeRefl.material.uniforms.uTime.value += dt;
-  grade.uniforms.uTime.value += dt;
+  // Animated grain caused visible shimmer on high-density mobile displays.
+  // Keep a stable seed on coarse pointers; desktop retains very subtle motion.
+  if (!coarse) grade.uniforms.uTime.value += dt * .12;
   composer.render();
   requestAnimationFrame(frame);
 }

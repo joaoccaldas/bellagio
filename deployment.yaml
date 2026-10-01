@@ -1,0 +1,48 @@
+schema: caldas.deploy/v1
+product:
+  name: bellagio
+  type: cloud-3d-world
+  canonical_repo: joaoccaldas/bellagio
+
+source:
+  provider: github
+  branch: main
+
+frontend:
+  mode: static
+  entrypoint: index.html
+  preferred_provider: vercel
+  fallback_provider: github-pages
+
+world:
+  engine: bellagio-legacy
+  target_engine: caldas-world
+  streaming: planned
+  lod: planned
+  compatibility_mode: true
+
+assets:
+  current_base: assets/
+  target_provider: object-storage-cdn
+  target_formats:
+    geometry: gltf-glb-meshopt
+    textures: ktx2
+
+backend:
+  required_for_rendering: false
+  provider: none
+
+deployment:
+  preview: true
+  production_gate:
+    - static-integrity
+    - mobile-render
+    - desktop-render
+    - asset-validation
+    - performance-budget
+  rollback: git-revert
+
+budgets:
+  initial_interactive_seconds: 3
+  mobile_min_fps: 30
+  desktop_target_fps: 60

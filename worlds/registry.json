@@ -24,9 +24,10 @@
       "name": "St. George",
       "lat": 37.0965,
       "lon": -113.5684,
-      "kind": "scene",
+      "kind": "multi-location-world",
       "route": "worlds/st-george/",
-      "source": "joaoccaldas/canyonmuseum"
+      "source": "joaoccaldas/canyonmuseum",
+      "places": 5
     }
   ]
 }

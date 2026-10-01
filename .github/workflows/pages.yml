@@ -22,6 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout canonical Kona world
+        uses: actions/checkout@v4
+        with:
+          repository: joaoccaldas/studio-kona
+          path: _vendor/studio-kona
+
       - name: Validate world contracts
         run: |
           test -f deployment.yaml
@@ -56,14 +62,33 @@ jobs:
         run: |
           mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/vegas/assets
           cp portal/index.html _site/index.html
-          cp portal/worlds/kona/index.html _site/worlds/kona/index.html
-          cp portal/worlds/st-george/index.html _site/worlds/st-george/index.html
-          cp worlds/registry.json _site/worlds/registry.json
+
+          # Vegas: source-built runtime + same-origin assets
           cp -R assets/. _site/worlds/vegas/assets/
+
+          # Kona: vendor the canonical world into this same deployment artifact.
+          cp -R _vendor/studio-kona/preview-v2/. _site/worlds/kona/
+          mkdir -p _site/worlds/kona/assets
+          cp -R _vendor/studio-kona/web/public/assets/. _site/worlds/kona/assets/
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('_site/worlds/kona/index.html')
+          s=p.read_text()
+          old="window.__KONA_ASSET_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'../web/public/assets/':'https://joaoccaldas.github.io/studio-kona/web/public/assets/';"
+          s=s.replace(old,"window.__KONA_ASSET_BASE='./assets/';")
+          s=s.replace('<body>','<body><a href="../../" style="position:fixed;z-index:8;top:max(10px,env(safe-area-inset-top));left:10px;color:white;text-decoration:none;background:rgba(7,16,25,.78);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:9px 12px;font:12px system-ui;backdrop-filter:blur(10px)">← World map</a>')
+          p.write_text(s)
+          PY
+
+          # St. George: standalone native scene owned by this world repo.
+          cp worlds/st-george/index.html _site/worlds/st-george/index.html
+
+          cp worlds/registry.json _site/worlds/registry.json
           touch _site/.nojekyll
           test -f _site/index.html
           test -f _site/worlds/vegas/index.html
           test -f _site/worlds/kona/index.html
+          test -f _site/worlds/kona/src/islandRuntime.js
           test -f _site/worlds/st-george/index.html
 
       - name: Sync built Vegas fallback into repository

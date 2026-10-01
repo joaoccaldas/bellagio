@@ -1,1 +1,121 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071014"><title>St. George · Caldas Worlds</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#071014;color:white;font-family:Inter,system-ui,sans-serif;overflow:hidden}.top{position:fixed;z-index:5;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}.top a,.pill{pointer-events:auto;text-decoration:none;color:#fff;background:rgba(5,12,15,.78);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);border-radius:999px;padding:9px 12px;font-size:12px}.pill{max-width:62vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#c9d5d2}iframe{border:0;width:100%;height:100dvh;display:block;background:#071014}@media(max-width:600px){.top{top:max(8px,env(safe-area-inset-top));}.top a,.pill{padding:8px 10px}}</style></head><body><div class="top"><a href="../../">← World map</a><span class="pill">Current 3D scene · Canyon Museum</span></div><iframe src="https://joaoccaldas.github.io/canyonmuseum/" allow="fullscreen; accelerometer; gyroscope" referrerpolicy="strict-origin-when-cross-origin" title="St. George 3D world"></iframe></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#170d09">
+<title>St. George · Caldas Worlds</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#170d09;color:#fff;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.top{position:fixed;z-index:5;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}
+.top a,.chip{pointer-events:auto;text-decoration:none;color:#fff;background:rgba(20,10,7,.72);border:1px solid rgba(255,172,96,.28);border-radius:999px;padding:9px 12px;backdrop-filter:blur(10px);font-size:12px}
+.chip{color:#ffc18a}.caption{position:fixed;z-index:4;left:16px;right:16px;bottom:max(18px,env(safe-area-inset-bottom));max-width:620px;pointer-events:none;text-shadow:0 2px 20px #000}.caption h1{font-size:clamp(30px,8vw,56px);margin:0 0 6px;line-height:.95}.caption p{margin:0;color:#e5c8b1;line-height:1.45;font-size:13px}.hint{margin-top:8px;font-size:11px;color:#c99470}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="top"><a href="../../">← World map</a><span class="chip">St. George · Utah</span></div>
+<div class="caption"><h1>Red rock study</h1><p>A standalone procedural St. George scene, extracted from the Canyon Museum art-world language and rebuilt as its own world package.</p><div class="hint">Drag to orbit · pinch / wheel to zoom</div></div>
+<script type="importmap">{"imports":{"three":"https://esm.sh/three@0.160.0","three/":"https://esm.sh/three@0.160.0/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+const coarse = matchMedia('(pointer:coarse)').matches;
+const canvas = document.querySelector('#c');
+const renderer = new THREE.WebGLRenderer({canvas,antialias:!coarse,powerPreference:'high-performance'});
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x170d09);
+scene.fog = new THREE.FogExp2(0x2a120b, .018);
+
+const camera = new THREE.PerspectiveCamera(48,1,.1,250);
+camera.position.set(9,6.5,12);
+
+const controls = new OrbitControls(camera,canvas);
+controls.enableDamping=true;
+controls.dampingFactor=.07;
+controls.target.set(0,2.3,0);
+controls.minDistance=5;
+controls.maxDistance=30;
+controls.maxPolarAngle=Math.PI*.49;
+
+scene.add(new THREE.HemisphereLight(0xffd6b0,0x35120b,2.0));
+const sun = new THREE.DirectionalLight(0xffb56d,4.2);
+sun.position.set(-5,11,8); scene.add(sun);
+
+const ground = new THREE.Mesh(
+ new THREE.PlaneGeometry(90,90,1,1),
+ new THREE.MeshStandardMaterial({color:0x35170f,roughness:1})
+);
+ground.rotation.x=-Math.PI/2; scene.add(ground);
+
+const rockMat = new THREE.MeshStandardMaterial({color:0x87311f,roughness:.82,metalness:.02});
+const darkMat = new THREE.MeshStandardMaterial({color:0x4e1c15,roughness:.9});
+const glowMat = new THREE.MeshBasicMaterial({color:0xff7f3e,toneMapped:false});
+
+const heights=[2.1,3.0,4.2,5.2,4.5,3.3,2.2];
+const group=new THREE.Group();
+for(let i=0;i<heights.length;i++){
+ const h=heights[i];
+ const geo=new THREE.BoxGeometry(.34,h,2.0,1,5,1);
+ const pos=geo.attributes.position;
+ for(let j=0;j<pos.count;j++){
+   const y=pos.getY(j), z=pos.getZ(j);
+   const wobble=Math.sin((y+h*.5)*2.1+i*.9)*.07 + Math.sin(z*3.4+i)*.04;
+   pos.setX(j,pos.getX(j)+wobble);
+ }
+ geo.computeVertexNormals();
+ const mesh=new THREE.Mesh(geo,i%2?rockMat:darkMat);
+ mesh.position.set((i-3)*.78,h/2,0);
+ mesh.rotation.y=(i-3)*.055;
+ group.add(mesh);
+}
+scene.add(group);
+
+const curvePts=[
+ new THREE.Vector3(-2.5,.45,1.06),new THREE.Vector3(-1.65,1.45,1.08),
+ new THREE.Vector3(-.75,2.8,1.1),new THREE.Vector3(.1,4.55,1.1),
+ new THREE.Vector3(1.1,3.7,1.08),new THREE.Vector3(2.45,2.1,1.06)
+];
+const curve=new THREE.CatmullRomCurve3(curvePts);
+const seam=new THREE.Mesh(new THREE.TubeGeometry(curve,72,.055,8,false),glowMat);
+scene.add(seam);
+
+for(let k=0;k<36;k++){
+ const h=.35+Math.random()*1.6;
+ const r=.15+Math.random()*.55;
+ const geo=new THREE.DodecahedronGeometry(r,0);
+ const m=new THREE.Mesh(geo,Math.random()>.25?rockMat:darkMat);
+ const a=Math.random()*Math.PI*2, d=4+Math.random()*13;
+ m.position.set(Math.cos(a)*d,h*.3,Math.sin(a)*d);
+ m.scale.y=h;
+ m.rotation.set(Math.random(),Math.random(),Math.random());
+ scene.add(m);
+}
+
+const mesa = new THREE.Mesh(
+ new THREE.CylinderGeometry(14,18,2.6,18,4,false),
+ new THREE.MeshStandardMaterial({color:0x5b2117,roughness:1})
+);
+mesa.position.set(-30,1.2,-22); mesa.scale.y=1.4; scene.add(mesa);
+
+function resize(){
+ const w=innerWidth,h=innerHeight;
+ renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.2:1.75));
+ renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+addEventListener('resize',resize,{passive:true}); resize();
+const clock=new THREE.Clock();
+function frame(){
+ const t=clock.getElapsedTime();
+ seam.material.color.setHSL(.055,.95,.58+.05*Math.sin(t*.7));
+ controls.update(); renderer.render(scene,camera); requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body></html>

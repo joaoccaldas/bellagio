@@ -60,7 +60,7 @@ jobs:
 
       - name: Assemble world atlas
         run: |
-          mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/vegas/assets _site/world-runtime
+          mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/nice _site/worlds/vegas/assets _site/world-runtime
           cp portal/index.html _site/index.html
           cp world-runtime/core.js _site/world-runtime/core.js
           cp world-runtime/places.js _site/world-runtime/places.js
@@ -74,8 +74,9 @@ jobs:
           cp -R _vendor/studio-kona/web/public/assets/. _site/worlds/kona/assets/
           python tools/patch_kona_world.py
 
-          # St. George: standalone native scene owned by this world repo.
+          # St. George and Nice: native race worlds owned by this world repo.
           cp worlds/st-george/index.html _site/worlds/st-george/index.html
+          cp worlds/nice/index.html _site/worlds/nice/index.html
 
           cp worlds/registry.json _site/worlds/registry.json
           touch _site/.nojekyll
@@ -84,6 +85,7 @@ jobs:
           test -f _site/worlds/kona/index.html
           test -f _site/worlds/kona/src/islandRuntime.js
           test -f _site/worlds/st-george/index.html
+          test -f _site/worlds/nice/index.html
           test -f _site/world-runtime/core.js
           test -f _site/world-runtime/places.js
 

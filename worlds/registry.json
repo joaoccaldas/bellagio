@@ -28,6 +28,16 @@
       "route": "worlds/st-george/",
       "source": "joaoccaldas/canyonmuseum",
       "places": 5
+    },
+    {
+      "id": "nice",
+      "name": "Nice",
+      "lat": 43.7102,
+      "lon": 7.262,
+      "kind": "multi-location-world",
+      "route": "worlds/nice/",
+      "source": "joaoccaldas/bellagio",
+      "places": 10
     }
   ]
 }

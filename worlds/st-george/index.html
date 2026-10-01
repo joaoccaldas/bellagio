@@ -15,14 +15,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#170d09;col
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="top"><a href="../../">← World map</a><span class="chip">St. George · Utah</span></div>
+<div class="top"><span></span><span class="chip">St. George · Utah</span></div>
 <div class="caption"><h1>Red rock study</h1><p>A standalone procedural St. George scene, extracted from the Canyon Museum art-world language and rebuilt as its own world package.</p><div class="hint">Drag to orbit · pinch / wheel to zoom</div></div>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.160.0","three/":"https://esm.sh/three@0.160.0/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { detectDevice, installWorldNav, installResize, createFrameLoop, markWorldReady } from '../../world-runtime/core.js';
 
-const coarse = matchMedia('(pointer:coarse)').matches;
+const { coarse, reducedMotion } = detectDevice();
 const canvas = document.querySelector('#c');
 const renderer = new THREE.WebGLRenderer({canvas,antialias:!coarse,powerPreference:'high-performance'});
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -104,18 +105,15 @@ const mesa = new THREE.Mesh(
 );
 mesa.position.set(-30,1.2,-22); mesa.scale.y=1.4; scene.add(mesa);
 
-function resize(){
- const w=innerWidth,h=innerHeight;
- renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.2:1.75));
- renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
-}
-addEventListener('resize',resize,{passive:true}); resize();
-const clock=new THREE.Clock();
-function frame(){
- const t=clock.getElapsedTime();
- seam.material.color.setHSL(.055,.95,.58+.05*Math.sin(t*.7));
- controls.update(); renderer.render(scene,camera); requestAnimationFrame(frame);
-}
-frame();
+installWorldNav({ href: '../../' });
+installResize({ renderer, camera, quality: () => 'high' });
+let elapsed = 0;
+createFrameLoop((dt) => {
+ elapsed += dt;
+ if (!reducedMotion) seam.material.color.setHSL(.055,.95,.58+.05*Math.sin(elapsed*.7));
+ controls.update();
+ renderer.render(scene,camera);
+});
+markWorldReady({ id: 'st-george', detail: { kind: 'scene' } });
 </script>
 </body></html>

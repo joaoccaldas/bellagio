@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://caldas.ai/schemas/world.schema.json",
+  "title": "Caldas World",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "version",
+    "zones"
+  ],
+  "properties": {
+    "schema": {
+      "const": "caldas.world/v1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "defaultZone": {
+      "type": "string"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "assetBase": {
+            "type": "string"
+          },
+          "lod": {
+            "type": "object"
+          },
+          "systems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "roadmap": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

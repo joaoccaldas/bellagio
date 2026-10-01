@@ -1,0 +1,51 @@
+name: Deploy Bellagio World
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate required world files
+        run: |
+          test -f index.html
+          test -f deployment.yaml
+          test -f worlds/world.schema.json
+          test -f worlds/vegas/world.json
+          python -m json.tool worlds/world.schema.json >/dev/null
+          python -m json.tool worlds/vegas/world.json >/dev/null
+      - name: Reject broken absolute localhost asset references
+        run: |
+          if grep -R -nE 'https?://(127\.0\.0\.1|localhost)' index.html worlds deployment.yaml; then
+            echo "Localhost reference found in deployable world"
+            exit 1
+          fi
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

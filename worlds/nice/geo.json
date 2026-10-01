@@ -1,0 +1,17 @@
+{
+  "id": "nice",
+  "center": {
+    "lat": 43.75,
+    "lon": 7.05
+  },
+  "bbox": {
+    "west": 6.75,
+    "south": 43.62,
+    "east": 7.32,
+    "north": 43.88
+  },
+  "zoom": 12,
+  "grid": 129,
+  "vertical_scale": 1,
+  "attribution": "Imagery: Esri World Imagery · Elevation: AWS Terrarium"
+}

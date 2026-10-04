@@ -29,38 +29,49 @@
     {
       "id": "caldas-3d-lab",
       "name": "Caldas 3D Lab Wing",
-      "status": "cross-world-adapter",
+      "status": "blocked-pending-final-room-recovery",
       "entrypoint": "/worlds/vegas/lab/",
       "host": "bellagio",
       "rooms": [
         {
-          "id": "norwegian-engine",
-          "name": "NOR // 3",
+          "semantic_id": "room:konam:nor3-winter",
+          "name": "NOR // 3 · KONA WINTER",
           "source_project": "joaoccaldas/konam",
-          "source_url": "https://joaoccaldas.github.io/konam/norwegian-engine-review.html",
-          "mode": "canonical-embed"
+          "source_ref": "cc80c48ada08a634c642561a64ef928f06c626be",
+          "lifecycle": "FINAL_CANDIDATE",
+          "runtime_entry": "?reviewRoom=nor3-winter",
+          "mode": "semantic-reference",
+          "available": false
         },
         {
-          "id": "beast-cave",
+          "semantic_id": "room:konam:beast-cave",
           "name": "Beast Cave",
           "source_project": "joaoccaldas/konam",
-          "source_url": "https://joaoccaldas.github.io/konam/?reviewRoom=beast-cave&room=beast",
-          "mode": "canonical-embed"
+          "source_ref": "cc80c48ada08a634c642561a64ef928f06c626be",
+          "lifecycle": "FINAL_CANDIDATE",
+          "runtime_entry": "?reviewRoom=beast-cave",
+          "mode": "semantic-reference",
+          "available": false
         },
         {
-          "id": "breitling",
-          "name": "Breitling × KONA",
+          "semantic_id": "room:konam:breitling-kona",
+          "name": "BREITLING × KONA · Finish-Line Atelier",
           "source_project": "joaoccaldas/konam",
-          "source_url": "https://joaoccaldas.github.io/konam/?room=breitling",
-          "mode": "canonical-embed"
+          "source_ref": "cc80c48ada08a634c642561a64ef928f06c626be",
+          "lifecycle": "FINAL_CANDIDATE",
+          "runtime_entry": "?reviewRoom=breitling-kona",
+          "mode": "semantic-reference",
+          "available": false
         }
       ],
       "principles": [
         "no copied renderer",
         "no copied room geometry",
-        "canonical source room remains authoritative",
+        "semantic room identity is authoritative",
+        "do not bind public navigation to stale runtime URLs",
         "host owns navigation only"
-      ]
+      ],
+      "blocker": "Final KONA room sources exist on cc80c48 but are not yet safely recovered onto current KONA main."
     }
   ],
   "roadmap": {

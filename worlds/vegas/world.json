@@ -2,7 +2,7 @@
   "schema": "caldas.world/v1",
   "id": "vegas",
   "name": "Las Vegas",
-  "version": 1,
+  "version": 2,
   "defaultZone": "bellagio",
   "runtime": {
     "mode": "compatibility",
@@ -12,7 +12,7 @@
     {
       "id": "bellagio",
       "name": "Bellagio",
-      "status": "legacy-inline",
+      "status": "native-world",
       "assetBase": "/assets/",
       "lod": {
         "lod0": [],
@@ -23,60 +23,181 @@
         "fountains",
         "time-of-day",
         "navigation",
-        "evidence"
+        "evidence",
+        "native-place-flyto"
+      ],
+      "rooms": [
+        {
+          "semantic_id": "room:bellagio:lobby",
+          "name": "Main Lobby",
+          "place_name": "Main lobby",
+          "truth": "I",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "installation:bellagio:fiori-di-como",
+          "name": "Fiori di Como",
+          "place_name": "Fiori di Como",
+          "truth": "P",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:conservatory",
+          "name": "Conservatory & Botanical Gardens",
+          "place_name": "Conservatory & Botanical Gardens",
+          "truth": "P+F",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:lift-foyer",
+          "name": "Lift Foyer",
+          "place_name": "Lift foyer",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:lake-como-salon",
+          "name": "Lake Como Salon",
+          "place_name": "Lake Como salon",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:penthouse-dining",
+          "name": "Dining Room",
+          "place_name": "Dining room",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:rat-pack-bar",
+          "name": "Rat Pack Bar",
+          "place_name": "Rat Pack bar",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:fiori-gallery",
+          "name": "Glass Gallery",
+          "place_name": "Glass gallery",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:penthouse-spa",
+          "name": "Spa & Indoor Pool",
+          "place_name": "Spa & indoor pool",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:desert-moon-library",
+          "name": "Library",
+          "place_name": "Library",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:desert-moon-bedroom",
+          "name": "Desert Moon Bedroom",
+          "place_name": "Desert Moon bedroom",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:master-bath",
+          "name": "Master Bath",
+          "place_name": "Master bath",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:dressing-room",
+          "name": "Dressing Room",
+          "place_name": "Dressing room",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "room:bellagio:rotunda",
+          "name": "Rotunda Atrium",
+          "place_name": "Rotunda",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "zone:bellagio:roof-terrace",
+          "name": "Roof Terrace",
+          "place_name": "Roof terrace",
+          "truth": "X",
+          "host": "bellagio-native"
+        },
+        {
+          "semantic_id": "zone:bellagio:belvedere",
+          "name": "Belvedere",
+          "place_name": "Belvedere (lantern)",
+          "truth": "F+X",
+          "host": "bellagio-native"
+        }
       ]
     },
     {
       "id": "caldas-3d-lab",
-      "name": "Caldas 3D Lab Wing",
-      "status": "blocked-pending-final-room-recovery",
+      "name": "Bellagio Rooms Hub",
+      "status": "wired-awaiting-kona-recovery-certification",
       "entrypoint": "/worlds/vegas/lab/",
       "host": "bellagio",
+      "integration_mode": "host-native-plus-canonical-embed",
       "rooms": [
         {
           "semantic_id": "room:konam:nor3-winter",
           "name": "NOR // 3 · KONA WINTER",
           "source_project": "joaoccaldas/konam",
           "source_ref": "cc80c48ada08a634c642561a64ef928f06c626be",
+          "recovery_pr": 124,
           "lifecycle": "FINAL_CANDIDATE",
-          "runtime_entry": "?reviewRoom=nor3-winter",
-          "mode": "semantic-reference",
-          "available": false
+          "runtime_entry": "https://joaoccaldas.github.io/konam/?reviewRoom=nor3-winter",
+          "mode": "canonical-embed",
+          "available_after_certification": true
         },
         {
           "semantic_id": "room:konam:beast-cave",
           "name": "Beast Cave",
           "source_project": "joaoccaldas/konam",
           "source_ref": "cc80c48ada08a634c642561a64ef928f06c626be",
+          "recovery_pr": 124,
           "lifecycle": "FINAL_CANDIDATE",
-          "runtime_entry": "?reviewRoom=beast-cave",
-          "mode": "semantic-reference",
-          "available": false
+          "runtime_entry": "https://joaoccaldas.github.io/konam/?reviewRoom=beast-cave",
+          "mode": "canonical-embed",
+          "available_after_certification": true
         },
         {
           "semantic_id": "room:konam:breitling-kona",
           "name": "BREITLING × KONA · Finish-Line Atelier",
           "source_project": "joaoccaldas/konam",
           "source_ref": "cc80c48ada08a634c642561a64ef928f06c626be",
+          "recovery_pr": 124,
           "lifecycle": "FINAL_CANDIDATE",
-          "runtime_entry": "?reviewRoom=breitling-kona",
-          "mode": "semantic-reference",
-          "available": false
+          "runtime_entry": "https://joaoccaldas.github.io/konam/?reviewRoom=breitling-kona",
+          "mode": "canonical-embed",
+          "available_after_certification": true
         }
       ],
       "principles": [
-        "no copied renderer",
-        "no copied room geometry",
+        "Bellagio rooms stay native in the Bellagio renderer",
+        "no copied KONA renderer",
+        "no copied KONA room geometry",
         "semantic room identity is authoritative",
-        "do not bind public navigation to stale runtime URLs",
+        "KONA canonical embed is not shared runtime",
         "host owns navigation only"
       ],
-      "blocker": "Final KONA room sources exist on cc80c48 but are not yet safely recovered onto current KONA main."
+      "blocker": "KONA recovery PR #124 must pass deterministic, visual and performance evidence before these final KONA identities become public canonical."
     }
   ],
   "roadmap": {
     "streaming": true,
     "sharedEngine": "@caldas/world-engine",
-    "assetManifest": "/worlds/vegas/assets.json"
+    "assetManifest": "/worlds/vegas/assets.json",
+    "next_native_room_experiment": "room:konam:nor3-winter"
   }
 }

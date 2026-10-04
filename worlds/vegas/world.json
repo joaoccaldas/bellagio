@@ -63,7 +63,7 @@
           "host": "bellagio-native"
         },
         {
-          "semantic_id": "room:bellagio:penthouse-dining",
+          "semantic_id": "room:bellagio:dining",
           "name": "Dining Room",
           "place_name": "Dining room",
           "truth": "X",
@@ -84,7 +84,7 @@
           "host": "bellagio-native"
         },
         {
-          "semantic_id": "room:bellagio:penthouse-spa",
+          "semantic_id": "room:bellagio:spa",
           "name": "Spa & Indoor Pool",
           "place_name": "Spa & indoor pool",
           "truth": "X",
@@ -98,7 +98,7 @@
           "host": "bellagio-native"
         },
         {
-          "semantic_id": "room:bellagio:desert-moon-bedroom",
+          "semantic_id": "room:bellagio:master-bedroom",
           "name": "Desert Moon Bedroom",
           "place_name": "Desert Moon bedroom",
           "truth": "X",
@@ -112,7 +112,7 @@
           "host": "bellagio-native"
         },
         {
-          "semantic_id": "room:bellagio:dressing-room",
+          "semantic_id": "room:bellagio:dressing",
           "name": "Dressing Room",
           "place_name": "Dressing room",
           "truth": "X",

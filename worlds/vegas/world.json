@@ -25,6 +25,42 @@
         "navigation",
         "evidence"
       ]
+    },
+    {
+      "id": "caldas-3d-lab",
+      "name": "Caldas 3D Lab Wing",
+      "status": "cross-world-adapter",
+      "entrypoint": "/worlds/vegas/lab/",
+      "host": "bellagio",
+      "rooms": [
+        {
+          "id": "norwegian-engine",
+          "name": "NOR // 3",
+          "source_project": "joaoccaldas/konam",
+          "source_url": "https://joaoccaldas.github.io/konam/norwegian-engine-review.html",
+          "mode": "canonical-embed"
+        },
+        {
+          "id": "beast-cave",
+          "name": "Beast Cave",
+          "source_project": "joaoccaldas/konam",
+          "source_url": "https://joaoccaldas.github.io/konam/?reviewRoom=beast-cave&room=beast",
+          "mode": "canonical-embed"
+        },
+        {
+          "id": "breitling",
+          "name": "Breitling × KONA",
+          "source_project": "joaoccaldas/konam",
+          "source_url": "https://joaoccaldas.github.io/konam/?room=breitling",
+          "mode": "canonical-embed"
+        }
+      ],
+      "principles": [
+        "no copied renderer",
+        "no copied room geometry",
+        "canonical source room remains authoritative",
+        "host owns navigation only"
+      ]
     }
   ],
   "roadmap": {

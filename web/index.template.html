@@ -75,6 +75,7 @@ body.walking #stick{display:block}
 <div id="stick" aria-label="Move"></div>
 <div class="bar">
   <button id="placesBtn">Places</button>
+  <button id="labBtn" type="button" aria-label="Open Caldas 3D Lab Wing">Rooms</button>
   <button id="modeBtn">Walk</button>
   <input id="tod" type="range" min="0" max="1" step=".001" aria-label="Time of day"><span id="todLabel">--:--</span>
   <button id="infoBtn">Evidence</button>
@@ -89,6 +90,7 @@ import { installWorldNav, markWorldReady } from '../../world-runtime/core.js';
 installWorldNav({ href: '../../' });
 window.addEventListener('load', () => markWorldReady({ id: 'vegas', detail: { kind: 'full-world' } }), { once: true });
 </script>
+<script>document.getElementById('labBtn')?.addEventListener('click',()=>{location.href='lab/';});</script>
 <script>window.__BELLAGIO_ASSETS='assets/';</script>
 <script>__APP__</script>
 </body>

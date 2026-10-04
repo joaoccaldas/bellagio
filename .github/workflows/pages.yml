@@ -73,6 +73,7 @@ jobs:
 
           # Vegas: source-built runtime + same-origin assets
           cp -R assets/. _site/worlds/vegas/assets/
+          cp -R worlds/vegas/lab _site/worlds/vegas/lab
 
           # Kona: vendor the canonical world into this same deployment artifact.
           cp -R _vendor/studio-kona/preview-v2/. _site/worlds/kona/
@@ -90,6 +91,7 @@ jobs:
           touch _site/.nojekyll
           test -f _site/index.html
           test -f _site/worlds/vegas/index.html
+          test -f _site/worlds/vegas/lab/index.html
           test -f _site/worlds/kona/index.html
           test -f _site/worlds/kona/src/islandRuntime.js
           test -f _site/worlds/st-george/index.html

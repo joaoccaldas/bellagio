@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070a0d">
+<title>Bellagio · Caldas 3D Lab Wing</title>
+<meta name="description" content="A Bellagio-hosted integration wing for NOR // 3, Beast Cave and Breitling × KONA using their canonical KONA room runtimes.">
+<style>
+:root{--bg:#06090c;--panel:#0d1318;--line:rgba(255,255,255,.12);--text:#f5f6f2;--muted:#9aa6ac;--gold:#d7b36a;--red:#d71920}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -10%,#1a2028 0,#06090c 54%,#030506 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100dvh}.shell{min-height:100dvh;display:grid;grid-template-rows:auto auto 1fr}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:max(16px,env(safe-area-inset-top)) 18px 12px;border-bottom:1px solid var(--line);background:rgba(4,7,9,.74);backdrop-filter:blur(16px)}
+.brand{display:flex;gap:10px;align-items:baseline}.brand b{font-size:15px}.brand span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.back{color:var(--muted);text-decoration:none;font-size:13px}
+.intro{padding:18px;display:flex;justify-content:space-between;gap:16px;align-items:end}.intro h1{margin:0;font-size:clamp(28px,5vw,52px);line-height:.98;letter-spacing:-.035em}.intro p{max-width:640px;margin:8px 0 0;color:var(--muted);line-height:1.45}
+.rooms{display:grid;grid-template-columns:260px 1fr;min-height:0;border-top:1px solid var(--line)}
+.nav{padding:12px;border-right:1px solid var(--line);background:rgba(8,12,16,.72);overflow:auto}
+.room-btn{width:100%;text-align:left;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035);color:var(--text);margin-bottom:10px;cursor:pointer}
+.room-btn[aria-pressed="true"]{border-color:rgba(215,179,106,.65);background:rgba(215,179,106,.08)}
+.room-btn small{display:block;color:var(--gold);font-size:10px;letter-spacing:.13em;text-transform:uppercase}.room-btn b{display:block;margin-top:4px;font-size:17px}.room-btn span{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:4px}
+.stage{position:relative;min-height:620px;background:#050607}.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#050607}
+.note{position:absolute;right:12px;bottom:12px;z-index:2;font-size:11px;color:#d8dde0;background:rgba(3,5,7,.78);border:1px solid var(--line);border-radius:999px;padding:7px 10px;backdrop-filter:blur(10px)}
+@media(max-width:760px){.intro{display:block}.rooms{grid-template-columns:1fr;grid-template-rows:auto 1fr}.nav{display:flex;gap:8px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.room-btn{min-width:220px;margin:0}.stage{min-height:68dvh}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div class="brand"><b>Bellagio</b><span>Caldas 3D Lab Wing</span></div>
+    <a class="back" href="../">Back to Las Vegas</a>
+  </header>
+  <section class="intro">
+    <div><h1>Three rooms.<br>One shared language.</h1><p>This wing does not copy the rooms. It hosts their canonical KONA runtime surfaces inside Bellagio so we can test cross-world navigation, identity and future shared-runtime integration without forking the source experiences.</p></div>
+  </section>
+  <section class="rooms">
+    <nav class="nav" aria-label="Integrated rooms">
+      <button class="room-btn" data-room="nor" aria-pressed="true"><small>Engineering benchmark</small><b>NOR // 3</b><span>Systems, optimization, procedural installations.</span></button>
+      <button class="room-btn" data-room="beast" aria-pressed="false"><small>Experience benchmark</small><b>Beast Cave</b><span>Lionel Sanders atmosphere and narrative regression oracle.</span></button>
+      <button class="room-btn" data-room="breitling" aria-pressed="false"><small>Product benchmark</small><b>Breitling × KONA</b><span>Hero-product fidelity and luxury macro presentation.</span></button>
+    </nav>
+    <div class="stage">
+      <iframe id="roomFrame" title="Integrated 3D room" loading="eager" allow="fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <div class="note" id="roomNote">Canonical source: KONA.m · no copied runtime</div>
+    </div>
+  </section>
+</main>
+<script>
+const rooms={
+  nor:{url:'https://joaoccaldas.github.io/konam/norwegian-engine-review.html',title:'NOR // 3'},
+  beast:{url:'https://joaoccaldas.github.io/konam/?reviewRoom=beast-cave&room=beast',title:'Beast Cave'},
+  breitling:{url:'https://joaoccaldas.github.io/konam/?room=breitling',title:'Breitling × KONA'}
+};
+const frame=document.getElementById('roomFrame');
+const buttons=[...document.querySelectorAll('[data-room]')];
+function openRoom(id){
+  const r=rooms[id]||rooms.nor;
+  frame.src=r.url;
+  frame.title=r.title+' integrated 3D room';
+  buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.room===id)));
+  history.replaceState(null,'','#'+id);
+}
+buttons.forEach(b=>b.addEventListener('click',()=>openRoom(b.dataset.room)));
+openRoom(location.hash.slice(1)||'nor');
+</script>
+</body>
+</html>

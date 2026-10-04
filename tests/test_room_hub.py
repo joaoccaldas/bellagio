@@ -9,7 +9,10 @@ class RoomHubTest(unittest.TestCase):
     def test_native_bellagio_inventory_is_complete(self):
         bellagio = next(z for z in WORLD["zones"] if z["id"] == "bellagio")
         ids = {r["semantic_id"] for r in bellagio["rooms"] if "semantic_id" in r}
-        self.assertEqual(len(bellagio["rooms"]), 16)\n        aliases = {r.get("place_id"): r.get("parent_semantic_id") for r in bellagio["rooms"] if r.get("place_id")}\n        self.assertEqual(aliases.get("place:bellagio:fiori-di-como"), "room:bellagio:lobby")\n        self.assertEqual(aliases.get("place:bellagio:belvedere"), "zone:bellagio:roof-terrace")
+        self.assertEqual(len(bellagio["rooms"]), 16)
+        aliases = {r.get("place_id"): r.get("parent_semantic_id") for r in bellagio["rooms"] if r.get("place_id")}
+        self.assertEqual(aliases.get("place:bellagio:fiori-di-como"), "room:bellagio:lobby")
+        self.assertEqual(aliases.get("place:bellagio:belvedere"), "zone:bellagio:roof-terrace")
         for required in {
             "room:bellagio:lobby","room:bellagio:conservatory",
             "room:bellagio:master-bath","room:bellagio:dressing",

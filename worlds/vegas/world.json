@@ -35,11 +35,12 @@
           "host": "bellagio-native"
         },
         {
-          "semantic_id": "installation:bellagio:fiori-di-como",
           "name": "Fiori di Como",
           "place_name": "Fiori di Como",
           "truth": "P",
-          "host": "bellagio-native"
+          "host": "bellagio-native",
+          "place_id": "place:bellagio:fiori-di-como",
+          "parent_semantic_id": "room:bellagio:lobby"
         },
         {
           "semantic_id": "room:bellagio:conservatory",
@@ -133,11 +134,12 @@
           "host": "bellagio-native"
         },
         {
-          "semantic_id": "zone:bellagio:belvedere",
           "name": "Belvedere",
           "place_name": "Belvedere (lantern)",
           "truth": "F+X",
-          "host": "bellagio-native"
+          "host": "bellagio-native",
+          "place_id": "place:bellagio:belvedere",
+          "parent_semantic_id": "zone:bellagio:roof-terrace"
         }
       ]
     },

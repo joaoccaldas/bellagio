@@ -1,0 +1,24 @@
+name: Bellagio room hub contract
+
+on:
+  pull_request:
+    paths:
+      - 'worlds/vegas/lab/**'
+      - 'worlds/vegas/world.json'
+      - 'web/src/places.js'
+      - 'tests/test_room_hub.py'
+      - '.github/workflows/room-hub-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  room-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate room hub
+        run: python -m unittest tests.test_room_hub -v
+      - name: Validate world JSON
+        run: python -m json.tool worlds/vegas/world.json >/dev/null

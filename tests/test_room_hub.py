@@ -12,7 +12,7 @@ class RoomHubTest(unittest.TestCase):
         self.assertEqual(len(bellagio["rooms"]), 16)
         for required in {
             "room:bellagio:lobby","room:bellagio:conservatory",
-            "room:bellagio:master-bath","room:bellagio:dressing-room",
+            "room:bellagio:master-bath","room:bellagio:dressing",
             "room:bellagio:rotunda","zone:bellagio:roof-terrace"
         }:
             self.assertIn(required, ids)

@@ -9,7 +9,7 @@ PAGES = (ROOT / ".github/workflows/pages.yml").read_text()
 PORTAL = (ROOT / "portal/index.html").read_text()
 LEGACY_LAB = (ROOT / "worlds/vegas/lab/index.html").read_text()
 
-RECOVERY_REF = "68c7b12b597ac3013137c617bf3c6e062c2d6ed9"
+RECOVERY_REF = "363848cb1c311ad88d48eebbde160c518a34dc30"
 
 class RoomHubTest(unittest.TestCase):
     def test_existing_bellagio_inventory_is_complete_and_not_duplicated(self):

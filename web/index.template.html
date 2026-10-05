@@ -27,8 +27,12 @@ input[type=range]{accent-color:var(--gold);width:180px}
 .panel.on{opacity:1;transform:none;pointer-events:auto}
 .panel h3,.panel h4{font:600 17px 'Cormorant Garamond',serif;color:var(--gold);letter-spacing:.06em;margin:14px 0 6px}
 .panel h4{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-family:Inter}
-#places button,#shows button{display:block;width:100%;text-align:left;border-radius:8px;margin:4px 0;border-color:transparent;background:rgba(255,255,255,.03)}
-#places button:hover{border-color:var(--line)}
+#places button,#shows button,#rooms button{display:block;width:100%;text-align:left;border-radius:8px;margin:4px 0;border-color:transparent;background:rgba(255,255,255,.03)}
+#places button:hover,#rooms button:hover{border-color:var(--line)}
+.room-meta{display:block;margin-top:2px;color:var(--mute);font-size:10px;line-height:1.35}.room-semantic{font-size:9px;letter-spacing:.08em;color:var(--gold)}
+#roomOverlay{position:fixed;inset:0;z-index:30;background:#050607;display:none}#roomOverlay.on{display:block}#roomOverlay iframe{position:absolute;inset:48px 0 0;width:100%;height:calc(100% - 48px);border:0;background:#050607}
+.room-overlay-bar{position:absolute;inset:0 0 auto;z-index:2;height:48px;display:flex;align-items:center;gap:10px;padding:7px 10px;background:rgba(8,8,8,.96);border-bottom:1px solid var(--line)}
+.room-overlay-bar button{padding:5px 11px}.room-overlay-bar b{font:500 17px 'Cormorant Garamond',serif;color:var(--gold)}.room-overlay-bar span{margin-left:auto;color:var(--mute);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48vw}
 .close{position:absolute;top:10px;right:10px;padding:2px 10px}
 .fine{color:var(--mute);font-size:12px}
 .ev{display:inline-block;font:500 10px Inter;letter-spacing:.08em;padding:2px 7px;border-radius:999px;border:1px solid currentColor;margin:0 2px;font-style:normal}
@@ -75,7 +79,7 @@ body.walking #stick{display:block}
 <div id="stick" aria-label="Move"></div>
 <div class="bar">
   <button id="placesBtn">Places</button>
-  <button id="labBtn" type="button" aria-label="Open Caldas 3D Lab Wing">Rooms</button>
+  <button id="roomsBtn" type="button" aria-label="Open Bellagio room index">Rooms</button>
   <button id="modeBtn">Walk</button>
   <input id="tod" type="range" min="0" max="1" step=".001" aria-label="Time of day"><span id="todLabel">--:--</span>
   <button id="infoBtn">Evidence</button>
@@ -83,14 +87,15 @@ body.walking #stick{display:block}
 <div class="panel" id="placesPanel"><button class="close">×</button><h3>Places</h3><div id="places"></div><h3>Fountain shows</h3><div id="shows"></div>
   <h3>View</h3><p><label>Quality <select id="quality"><option value="balanced">Balanced</option><option value="high">High</option><option value="ultra">Ultra</option></select></label></p>
   <p><label>Exposure <input id="exposure" type="range" min=".4" max="2" step=".01"></label></p></div>
+<div class="panel" id="roomsPanel"><button class="close">×</button><h3>Room index</h3><p class="fine">Bellagio-native rooms stay inside this world. Final KONA rooms open from the pinned recovery runtime inside the same Bellagio deployment.</p><div id="rooms"></div></div>
 <div class="panel" id="infoPanel"><button class="close">×</button><div id="infoBody"></div></div>
+<div id="roomOverlay" aria-hidden="true"><div class="room-overlay-bar"><button id="roomBack" type="button">← Bellagio</button><b id="roomTitle">Room</b><span id="roomStatus">Loading exact room…</span></div><iframe id="roomFrame" title="KONA room"></iframe></div>
 <div id="loading"><div><h1>BELLAGIO</h1><div class="track"><div id="bar"></div></div><p>Loading the lake, the tower and the light</p></div></div>
 <script type="module">
 import { installWorldNav, markWorldReady } from '../../world-runtime/core.js';
 installWorldNav({ href: '../../' });
 window.addEventListener('load', () => markWorldReady({ id: 'vegas', detail: { kind: 'full-world' } }), { once: true });
 </script>
-<script>document.getElementById('labBtn')?.addEventListener('click',()=>{location.href='lab/';});</script>
 <script>window.__BELLAGIO_ASSETS='assets/';</script>
 <script>__APP__</script>
 </body>

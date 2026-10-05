@@ -53,6 +53,17 @@ jobs:
             exit 1
           fi
 
+      - name: Guard Bellagio startup selectors
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src = Path('web/src/main.js').read_text()
+          bad = "$('.close').forEach"
+          if bad in src:
+              raise SystemExit("Bellagio startup regression: $() returns one element; use $() before forEach")
+          assert "$('.close').forEach" in src
+          PY
+
       - name: Build real geospatial terrain
         run: |
           python -m pip install --quiet pillow

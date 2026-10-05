@@ -142,6 +142,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-build
     steps:
+      - name: Let legacy branch Pages finish first
+        run: |
+          echo "Bellagio still has legacy branch Pages enabled; wait so the assembled artifact is the final deployment."
+          sleep 90
       - name: Deploy atlas
         id: deployment
         uses: actions/deploy-pages@v4

@@ -28,6 +28,13 @@ jobs:
           repository: joaoccaldas/studio-kona
           path: _vendor/studio-kona
 
+      - name: Checkout pinned final KONA room recovery
+        uses: actions/checkout@v4
+        with:
+          repository: joaoccaldas/konam
+          ref: 68c7b12b597ac3013137c617bf3c6e062c2d6ed9
+          path: _vendor/konam-final
+
       - name: Validate world contracts
         run: |
           test -f deployment.yaml
@@ -63,9 +70,17 @@ jobs:
           npm ci
           OUT_DIR=../_site/worlds/vegas node build.mjs
 
+      - name: Build pinned recovered KONA room runtime
+        run: |
+          (cd _vendor/konam-final/web && npm ci --ignore-scripts)
+          (cd _vendor/konam-final && node tools/build_pages.mjs && node tools/build_app.mjs && bash tools/stage_site.sh)
+          test -f _vendor/konam-final/_site/index.html
+          grep -q "reviewRoom" _vendor/konam-final/web/src/landing.js
+          grep -q "window.__reviewRoomIdentity = REVIEW_ROOM_SEMANTIC_ID" _vendor/konam-final/web/src/landing.js
+
       - name: Assemble world atlas
         run: |
-          mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/nice _site/worlds/vegas/assets _site/world-runtime
+          mkdir -p _site/worlds/kona _site/worlds/st-george _site/worlds/nice _site/worlds/vegas/assets _site/worlds/vegas/kona-rooms _site/world-runtime
           cp portal/index.html _site/index.html
           cp world-runtime/core.js _site/world-runtime/core.js
           cp world-runtime/places.js _site/world-runtime/places.js
@@ -73,7 +88,10 @@ jobs:
 
           # Vegas: source-built runtime + same-origin assets
           cp -R assets/. _site/worlds/vegas/assets/
-          cp -R worlds/vegas/lab _site/worlds/vegas/lab
+
+          # Final KONA rooms: exact recovery runtime is vendored into this same Pages artifact.
+          # This prevents Bellagio from accidentally opening stale production KONA routes.
+          cp -R _vendor/konam-final/_site/. _site/worlds/vegas/kona-rooms/
 
           # Kona: vendor the canonical world into this same deployment artifact.
           cp -R _vendor/studio-kona/preview-v2/. _site/worlds/kona/
@@ -91,7 +109,10 @@ jobs:
           touch _site/.nojekyll
           test -f _site/index.html
           test -f _site/worlds/vegas/index.html
-          test -f _site/worlds/vegas/lab/index.html
+          test -f _site/worlds/vegas/kona-rooms/index.html
+          test -f _site/worlds/vegas/kona-rooms/assets/watches/endurance-pro-study/watch.glb
+          test -f _site/worlds/vegas/kona-rooms/assets/rooms/beast-cave/hf-trainer.glb
+          test -f _site/worlds/vegas/kona-rooms/assets/rooms/nor3-winter/kona-winter-plate-1024.webp
           test -f _site/worlds/kona/index.html
           test -f _site/worlds/kona/src/islandRuntime.js
           test -f _site/worlds/st-george/index.html

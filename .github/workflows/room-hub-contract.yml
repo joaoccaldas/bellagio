@@ -47,7 +47,7 @@ jobs:
           repository: joaoccaldas/konam
           ref: 68c7b12b597ac3013137c617bf3c6e062c2d6ed9
           path: _vendor/konam-final
-      - name: Verify exact recovered room runtime contract
+      - name: Verify and build exact recovered room runtime
         run: |
           test -f _vendor/konam-final/web/src/nor3-winter.js
           test -f _vendor/konam-final/web/src/beast-cave.js
@@ -56,3 +56,10 @@ jobs:
           test -f _vendor/konam-final/assets/rooms/beast-cave/hf-trainer.glb
           test -f _vendor/konam-final/assets/rooms/nor3-winter/kona-winter-plate-1024.webp
           grep -q "window.__reviewRoomIdentity = REVIEW_ROOM_SEMANTIC_ID" _vendor/konam-final/web/src/landing.js
+          (cd _vendor/konam-final/web && npm ci --ignore-scripts)
+          (cd _vendor/konam-final && node tools/build_pages.mjs && node tools/build_app.mjs && bash tools/stage_site.sh)
+          test -f _vendor/konam-final/_site/index.html
+          mkdir -p _roomhub-build/kona-rooms
+          cp -R _vendor/konam-final/_site/. _roomhub-build/kona-rooms/
+          test -f _roomhub-build/kona-rooms/index.html
+          test -f _roomhub-build/kona-rooms/assets/watches/endurance-pro-study/watch.glb

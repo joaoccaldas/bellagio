@@ -25,6 +25,16 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const coarse = matchMedia('(pointer: coarse)').matches || innerWidth < 760;
 const A = window.__BELLAGIO_ASSETS || 'assets/';
+const BELLAGIO_ROOM_NAMES = [
+  'Main lobby','Fiori di Como','Conservatory & Botanical Gardens','Lift foyer','Lake Como salon','Dining room',
+  'Rat Pack bar','Glass gallery','Spa & indoor pool','Library','Desert Moon bedroom','Master bath','Dressing room',
+  'Rotunda','Roof terrace','Belvedere (lantern)'
+];
+const PORTABLE_ROOMS = [
+  { semanticId:'room:konam:nor3-winter', label:'NOR // 3 · KONA WINTER', role:'Engineering benchmark', href:'kona-rooms/index.html?reviewRoom=nor3-winter' },
+  { semanticId:'room:konam:beast-cave', label:'Beast Cave', role:'Athlete experience', href:'kona-rooms/index.html?reviewRoom=beast-cave' },
+  { semanticId:'room:konam:breitling-kona', label:'Breitling × KONA · Finish-Line Atelier', role:'Hero product benchmark', href:'kona-rooms/index.html?reviewRoom=breitling-kona' },
+];
 // Blender Z-up survey metres -> three Y-up
 const W = (x, y, z) => new THREE.Vector3(x, z, -y);
 
@@ -668,6 +678,49 @@ function chime() {
   } catch (_) { }
 }
 
+// ------------------------------------------------------------------ governed room index
+let portableRoomPoll = 0;
+function closePortableRoom() {
+  clearInterval(portableRoomPoll); portableRoomPoll = 0;
+  const overlay = $('#roomOverlay'), frame = $('#roomFrame');
+  overlay?.classList.remove('on'); overlay?.setAttribute('aria-hidden','true');
+  if (frame) frame.src = 'about:blank';
+  $('#roomStatus') && ($('#roomStatus').textContent = '');
+}
+function openPortableRoom(room) {
+  closePanels();
+  const overlay = $('#roomOverlay'), frame = $('#roomFrame'), title = $('#roomTitle'), status = $('#roomStatus');
+  if (!overlay || !frame) return;
+  overlay.classList.add('on'); overlay.setAttribute('aria-hidden','false');
+  if (title) title.textContent = room.label;
+  if (status) status.textContent = 'Loading exact room…';
+  frame.src = room.href;
+  clearInterval(portableRoomPoll);
+  let checks = 0;
+  portableRoomPoll = setInterval(() => {
+    checks++;
+    try {
+      const got = frame.contentWindow?.__reviewRoomIdentity || frame.contentWindow?.__museum?.reviewRoomIdentity || null;
+      if (got === room.semanticId) {
+        clearInterval(portableRoomPoll); portableRoomPoll = 0;
+        if (status) status.textContent = room.semanticId + ' · verified';
+        return;
+      }
+      if (got && got !== room.semanticId) {
+        clearInterval(portableRoomPoll); portableRoomPoll = 0;
+        frame.src = 'about:blank';
+        if (status) status.textContent = 'Blocked: wrong room identity (' + got + ')';
+        return;
+      }
+    } catch (_) {}
+    if (checks >= 150) {
+      clearInterval(portableRoomPoll); portableRoomPoll = 0;
+      frame.src = 'about:blank';
+      if (status) status.textContent = 'Blocked: exact room identity was not verified';
+    }
+  }, 200);
+}
+
 // ------------------------------------------------------------------ UI
 function ui() {
   const list = $('#places');
@@ -677,13 +730,35 @@ function ui() {
     const b = document.createElement('button'); b.textContent = p.name; b.onclick = () => { if (p.lift) rideLift(p.lift === 'up'); else go(p); closePanels(); };
     list.appendChild(b);
   });
+  const roomList = $('#rooms');
+  if (roomList) {
+    const nativeHead = document.createElement('h4'); nativeHead.textContent = 'Bellagio · native'; roomList.appendChild(nativeHead);
+    for (const name of BELLAGIO_ROOM_NAMES) {
+      const place = PLACES.find(p => p.name === name);
+      const b = document.createElement('button');
+      b.innerHTML = '<b>' + name + '</b><span class="room-meta">' + (place?.note || 'Existing Bellagio destination') + '</span>';
+      b.disabled = !place;
+      b.onclick = () => { if (!place) return; if (place.lift) rideLift(place.lift === 'up'); else go(place); closePanels(); };
+      roomList.appendChild(b);
+    }
+    const konaHead = document.createElement('h4'); konaHead.textContent = 'KONA · final recovered rooms'; roomList.appendChild(konaHead);
+    for (const room of PORTABLE_ROOMS) {
+      const b = document.createElement('button');
+      b.innerHTML = '<span class="room-semantic">' + room.role + '</span><b>' + room.label + '</b><span class="room-meta">' + room.semanticId + '</span>';
+      b.onclick = () => openPortableRoom(room);
+      roomList.appendChild(b);
+    }
+  }
   const sh = $('#shows');
   for (const name of Object.keys(SHOWS)) { const b = document.createElement('button'); b.textContent = name; b.onclick = () => fountains.play(name); sh.appendChild(b); }
   $('#tod').oninput = e => { S.tod = +e.target.value; applyTime(); save(); };
   $('#modeBtn').onclick = () => { setMode(S.mode === 'orbit' ? 'walk' : 'orbit'); if (S.mode === 'walk') syncWalkFromCamera(); };
-  $('#placesBtn').onclick = () => $('#placesPanel').classList.toggle('on');
-  $('#infoBtn').onclick = () => $('#infoPanel').classList.toggle('on');
-  $$('.close').forEach(b => b.onclick = closePanels);
+  $('#placesBtn').onclick = () => { closePanels(); $('#placesPanel').classList.toggle('on'); };
+  $('#roomsBtn').onclick = () => { closePanels(); $('#roomsPanel').classList.toggle('on'); };
+  $('#roomBack').onclick = closePortableRoom;
+  $('#infoBtn').onclick = () => { closePanels(); $('#infoPanel').classList.toggle('on'); };
+  $('.close').forEach(b => b.onclick = closePanels);
+  if (new URLSearchParams(location.search).get('rooms') === '1') $('#roomsPanel')?.classList.add('on');
   $('#quality').value = S.quality; $('#quality').onchange = e => { S.quality = e.target.value; resize(); save(); };
   $('#exposure').value = S.exposure; $('#exposure').oninput = e => { S.exposure = +e.target.value; applyTime(); save(); };
   // on-screen stick for touch walking

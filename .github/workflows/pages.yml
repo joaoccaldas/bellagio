@@ -125,23 +125,10 @@ jobs:
           test -f _site/world-runtime/places.js
           test -f _site/world-runtime/geo-terrain.js
 
-      - name: Sync generated geo assets and Vegas fallback into repository
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          src = Path('_site/worlds/vegas/index.html').read_text()
-          src = src.replace("window.__BELLAGIO_ASSETS='assets/';", "window.__BELLAGIO_ASSETS='../../assets/';")
-          Path('worlds/vegas/index.html').write_text(src)
-          PY
-          if git diff --quiet -- worlds/vegas/index.html worlds/st-george/geo worlds/nice/geo; then
-            echo "Generated world assets already current"
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add worlds/vegas/index.html worlds/st-george/geo worlds/nice/geo
-            git commit -m "build: sync world terrain assets [skip ci]"
-            git push
-          fi
+      # Do not push generated deployment files back to main from inside the Pages job.
+      # A self-push triggers the repository's legacy branch-based Pages deployment after
+      # this workflow and can overwrite the assembled artifact (including kona-rooms).
+      # Generated assets remain deployment artifacts; source updates happen explicitly.
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

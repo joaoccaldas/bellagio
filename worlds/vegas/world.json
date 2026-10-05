@@ -161,7 +161,7 @@
           "runtime_entry": "kona-rooms/index.html?reviewRoom=nor3-winter",
           "mode": "same-origin-verified-embed",
           "available_after_certification": true,
-          "recovery_ref": "68c7b12b597ac3013137c617bf3c6e062c2d6ed9"
+          "recovery_ref": "363848cb1c311ad88d48eebbde160c518a34dc30"
         },
         {
           "semantic_id": "room:konam:beast-cave",
@@ -173,7 +173,7 @@
           "runtime_entry": "kona-rooms/index.html?reviewRoom=beast-cave",
           "mode": "same-origin-verified-embed",
           "available_after_certification": true,
-          "recovery_ref": "68c7b12b597ac3013137c617bf3c6e062c2d6ed9"
+          "recovery_ref": "363848cb1c311ad88d48eebbde160c518a34dc30"
         },
         {
           "semantic_id": "room:konam:breitling-kona",
@@ -185,7 +185,7 @@
           "runtime_entry": "kona-rooms/index.html?reviewRoom=breitling-kona",
           "mode": "same-origin-verified-embed",
           "available_after_certification": true,
-          "recovery_ref": "68c7b12b597ac3013137c617bf3c6e062c2d6ed9"
+          "recovery_ref": "363848cb1c311ad88d48eebbde160c518a34dc30"
         }
       ],
       "principles": [

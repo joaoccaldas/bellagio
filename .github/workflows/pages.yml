@@ -58,10 +58,12 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           src = Path('web/src/main.js').read_text()
-          bad = "$('.close').forEach"
-          if bad in src:
-              raise SystemExit("Bellagio startup regression: $() returns one element; use $() before forEach")
-          assert "$('.close').forEach" in src
+          lines = {line.strip() for line in src.splitlines()}
+          broken = chr(36) + "('.close').forEach(b => b.onclick = closePanels);"
+          correct = chr(36) * 2 + "('.close').forEach(b => b.onclick = closePanels);"
+          if broken in lines:
+              raise SystemExit("Bellagio startup regression: single-element selector used before forEach")
+          assert correct in lines
           PY
 
       - name: Build real geospatial terrain

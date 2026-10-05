@@ -757,7 +757,7 @@ function ui() {
   $('#roomsBtn').onclick = () => { closePanels(); $('#roomsPanel').classList.toggle('on'); };
   $('#roomBack').onclick = closePortableRoom;
   $('#infoBtn').onclick = () => { closePanels(); $('#infoPanel').classList.toggle('on'); };
-  $('.close').forEach(b => b.onclick = closePanels);
+  document.querySelectorAll('.close').forEach(b => b.onclick = closePanels);
   if (new URLSearchParams(location.search).get('rooms') === '1') $('#roomsPanel')?.classList.add('on');
   $('#quality').value = S.quality; $('#quality').onchange = e => { S.quality = e.target.value; resize(); save(); };
   $('#exposure').value = S.exposure; $('#exposure').oninput = e => { S.exposure = +e.target.value; applyTime(); save(); };

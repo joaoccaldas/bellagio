@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: joaoccaldas/konam
-          ref: 68c7b12b597ac3013137c617bf3c6e062c2d6ed9
+          ref: 363848cb1c311ad88d48eebbde160c518a34dc30
           path: _vendor/konam-final
 
       - name: Validate world contracts

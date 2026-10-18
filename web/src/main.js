@@ -35,6 +35,7 @@ const PORTABLE_ROOMS = [
   { semanticId:'room:konam:beast-cave', label:'Beast Cave', role:'Athlete experience', href:'kona-rooms/index.html?reviewRoom=beast-cave' },
   { semanticId:'room:konam:breitling-kona', label:'Breitling × KONA · Finish-Line Atelier', role:'Hero product benchmark', href:'kona-rooms/index.html?reviewRoom=breitling-kona' },
   { semanticId:'room:konam:norseman-training', label:'Fjord to Summit · Norseman training', role:'Event training room', href:'kona-rooms/index.html?reviewRoom=norseman-training' },
+  { semanticId:'room:konam:decision-room', label:'The Decision Room · Finance', role:'Planning review room', href:'kona-rooms/index.html?reviewRoom=decision-room' },
 ];
 // Blender Z-up survey metres -> three Y-up
 const W = (x, y, z) => new THREE.Vector3(x, z, -y);

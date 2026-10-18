@@ -42,11 +42,12 @@ jobs:
           grep -q 'room:konam:beast-cave' ../_roomhub-build/index.html
           grep -q 'room:konam:breitling-kona' ../_roomhub-build/index.html
           grep -q 'room:konam:norseman-training' ../_roomhub-build/index.html
+          grep -q 'room:konam:decision-room' ../_roomhub-build/index.html
       - name: Verify pinned KONA recovery exists
         uses: actions/checkout@v4
         with:
           repository: joaoccaldas/konam
-          ref: 1ca3982c858663a7d252f2fe82dc9c267c2e87ce
+          ref: 6efb28061b7101bd21660df13f76226bc04b1e55
           path: _vendor/konam-final
       - name: Verify and build exact recovered room runtime
         run: |
@@ -55,6 +56,8 @@ jobs:
           test -f _vendor/konam-final/web/src/breitling-kona.js
           test -f _vendor/konam-final/web/src/norseman-training.js
           test -f _vendor/konam-final/assets/rooms/norseman-training/eidfjord.bin
+          test -f _vendor/konam-final/web/src/decision-room.js
+          test -f _vendor/konam-final/assets/rooms/decision-room/signal_column.glb
           test -f _vendor/konam-final/assets/watches/endurance-pro-study/watch.glb
           test -f _vendor/konam-final/assets/rooms/beast-cave/hf-trainer.glb
           test -f _vendor/konam-final/assets/rooms/nor3-winter/kona-winter-plate-1024.webp

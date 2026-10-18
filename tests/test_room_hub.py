@@ -9,7 +9,7 @@ PAGES = (ROOT / ".github/workflows/pages.yml").read_text()
 PORTAL = (ROOT / "portal/index.html").read_text()
 LEGACY_LAB = (ROOT / "worlds/vegas/lab/index.html").read_text()
 
-RECOVERY_REF = "363848cb1c311ad88d48eebbde160c518a34dc30"
+RECOVERY_REF = "1ca3982c858663a7d252f2fe82dc9c267c2e87ce"
 
 class RoomHubTest(unittest.TestCase):
     def test_existing_bellagio_inventory_is_complete_and_not_duplicated(self):
@@ -46,9 +46,12 @@ class RoomHubTest(unittest.TestCase):
             "room:konam:nor3-winter",
             "room:konam:beast-cave",
             "room:konam:breitling-kona",
+            "room:konam:norseman-training",
         })
         for room in rooms.values():
-            self.assertEqual(room["source_ref"], "cc80c48ada08a634c642561a64ef928f06c626be")
+            # Recovered rooms keep their recorded source; a new room records its own commit.
+            expected = RECOVERY_REF if room["semantic_id"] == "room:konam:norseman-training" else "cc80c48ada08a634c642561a64ef928f06c626be"
+            self.assertEqual(room["source_ref"], expected)
             self.assertEqual(room["recovery_ref"], RECOVERY_REF)
             self.assertTrue(room["runtime_entry"].startswith("kona-rooms/index.html?reviewRoom="))
             self.assertEqual(room["mode"], "same-origin-verified-embed")

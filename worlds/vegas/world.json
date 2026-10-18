@@ -161,7 +161,7 @@
           "runtime_entry": "kona-rooms/index.html?reviewRoom=nor3-winter",
           "mode": "same-origin-verified-embed",
           "available_after_certification": true,
-          "recovery_ref": "363848cb1c311ad88d48eebbde160c518a34dc30"
+          "recovery_ref": "1ca3982c858663a7d252f2fe82dc9c267c2e87ce"
         },
         {
           "semantic_id": "room:konam:beast-cave",
@@ -173,7 +173,7 @@
           "runtime_entry": "kona-rooms/index.html?reviewRoom=beast-cave",
           "mode": "same-origin-verified-embed",
           "available_after_certification": true,
-          "recovery_ref": "363848cb1c311ad88d48eebbde160c518a34dc30"
+          "recovery_ref": "1ca3982c858663a7d252f2fe82dc9c267c2e87ce"
         },
         {
           "semantic_id": "room:konam:breitling-kona",
@@ -185,7 +185,19 @@
           "runtime_entry": "kona-rooms/index.html?reviewRoom=breitling-kona",
           "mode": "same-origin-verified-embed",
           "available_after_certification": true,
-          "recovery_ref": "363848cb1c311ad88d48eebbde160c518a34dc30"
+          "recovery_ref": "1ca3982c858663a7d252f2fe82dc9c267c2e87ce"
+        },
+        {
+          "semantic_id": "room:konam:norseman-training",
+          "name": "FJORD TO SUMMIT · Norseman training",
+          "source_project": "joaoccaldas/konam",
+          "source_ref": "1ca3982c858663a7d252f2fe82dc9c267c2e87ce",
+          "lifecycle": "REVIEW_ROOM",
+          "runtime_entry": "kona-rooms/index.html?reviewRoom=norseman-training",
+          "mode": "same-origin-verified-embed",
+          "available_after_certification": true,
+          "recovery_ref": "1ca3982c858663a7d252f2fe82dc9c267c2e87ce",
+          "note": "Independent concept, not affiliated with the race. Terrain heights © Kartverket, CC BY 4.0."
         }
       ],
       "principles": [

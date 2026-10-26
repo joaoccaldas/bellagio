@@ -3,7 +3,7 @@ import io, math, json, os, sys, time, urllib.request
 from PIL import Image
 LAT0, LON0 = 36.11298, -115.17643          # Bellagio core = Las Vegas city frame origin
 KX, KY = 111320 * math.cos(math.radians(LAT0)), 110574.0
-UA = {'User-Agent': 'caldas-world-research/1.0 (joaoccaldas@gmail.com)'}
+UA = {'User-Agent': 'caldas-world-research/1.0'}
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 def geo(x, y): return LAT0 + y / KY, LON0 + x / KX
 def txy(lat, lon, z):

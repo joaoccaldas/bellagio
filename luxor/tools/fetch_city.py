@@ -10,7 +10,7 @@ from PIL import Image
 LAT0, LON0 = 36.11298, -115.17643
 KX = 111320 * math.cos(math.radians(LAT0))
 KY = 110574.0
-UA = {'User-Agent': 'caldas-world-research/1.0 (joaoccaldas@gmail.com)'}
+UA = {'User-Agent': 'caldas-world-research/1.0'}
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 DATA = os.path.join(ROOT, 'data')
 os.makedirs(DATA, exist_ok=True)
